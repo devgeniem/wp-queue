@@ -1,0 +1,21 @@
+{
+    "name": "devgeniem/wp-import-controller",
+    "type": "wordpress-muplugin",
+    "description": "A WordPress mu-plugin providing a modular multipurpose importer logic.",
+    "authors": [
+        {
+            "name": "Ville Siltala",
+            "email": "ville.siltala@geniem.com",
+            "homepage": "http://geniem.com/",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "wordpress", "mu-plugin", "importer"
+    ],
+    "license": "GPL-3.0-or-later",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {"Geniem\\ImportController\\": "src/"}
+    }
+}
