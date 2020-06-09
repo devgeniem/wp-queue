@@ -22,9 +22,18 @@
         "psr/log": "^1.1.3"
     },
     "require-dev": {
-        "devgeniem/geniem-rules-codesniffer": "dev-master"
+        "devgeniem/geniem-rules-codesniffer": "dev-master",
+        "brainmaestro/composer-git-hooks": "dev-master"
     },
     "scripts": {
-        "lint": "vendor/bin/phpcs --standard=Geniem plugin.php src/."
+        "lint": "vendor/bin/phpcs --standard=Geniem plugin.php src/",
+        "cghooks": "vendor/bin/cghooks"
+    },
+    "extra": {
+        "hooks": {
+            "pre-commit": [
+                "composer lint"
+            ]
+        }
     }
 }
