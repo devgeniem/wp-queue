@@ -16,45 +16,62 @@ use Geniem\ImportController\Interfaces\QueueInterface;
 class Dequeuer {
 
     /**
+     * The dequeue logger.
+     *
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * Constructor.
+     *
+     * @param LoggerInterface|null $logger An optional PSR-3 compatible logger instance.
+     *                                     If no logger is passed, dequeuer uses the plugin default.
+     */
+    public function __construct( ?LoggerInterface $logger = null ) {
+        $this->logger = $logger ?? new Logger();
+    }
+
+    /**
      * The callback for dequeueing queues.
      *
      * @param QueueInterface $queue  The queue name.
-     * @param Logger|null    $logger An optional PSR-3 compatible logger instance.
      *
-     * @return QueueInterface|null The queue instance or null on failure.
+     * @return bool True for success, false on failure.
      */
-    public function dequeue( QueueInterface $queue, ?LoggerInterface $logger = null ) : ?QueueInterface {
+    public function dequeue( QueueInterface $queue ) {
         if ( ! $queue instanceof QueueInterface ) {
-            $logger->error(
+            $this->logger->error(
                 'Unable to dequeue. The queue is not of type: ' . QueueInterface::class . '.',
                 [ __CLASS__ ]
             );
-            return null;
+            return false;
         }
 
         $name = $queue->get_name();
 
-        if ( $logger ) {
-            $queue->set_logger( $logger );
-        }
-
         if ( ! $queue->exists() ) {
-            $logger->error( "Unable to find the queue: $name.", [ __CLASS__ ] );
-            return null;
+            $this->logger->error( "Unable to find the queue: $name.", [ __CLASS__ ] );
+            return false;
         }
 
         // Run the first entry.
         try {
+            // Run hooks before the dequeue is executed.
+            do_action( 'gic_before_dequeue', $queue );
+            do_action( 'gic_before_dequeue_' . $name, $queue );
+
             $queue->dequeue();
 
-            // A hook to run after the dequeue is done.
-            do_action( 'geniem_import_controller_after_dequeue', $queue );
+            // Run hooks after the dequeue is done.
+            do_action( 'gic_after_dequeue', $queue );
+            do_action( 'gic_after_dequeue_' . $name, $queue );
 
-            return $queue;
+            return true;
         }
         catch ( \Exception $error ) {
-            if ( $logger ) {
-                $logger->error(
+            if ( $this->logger ) {
+                $this->logger->error(
                     "An error occurred while dequeueing from queue: $name.",
                     [
                         'message' => $error->getMessage(),
@@ -64,7 +81,7 @@ class Dequeuer {
                 );
             }
 
-            return null;
+            return false;
         }
     }
 }
