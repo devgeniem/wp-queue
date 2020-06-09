@@ -64,6 +64,16 @@ class DequeueCommand implements Command {
 
         $success = $dequeuer->dequeue( $queue );
 
-        return false;
+        if ( $success ) {
+            WP_CLI::success( 'Dequeue executed successfully!' );
+        }
+        else {
+            WP_CLI::error(
+                'An error occurred while executing the dequeue!
+                See the dequeuer and/or queue log for detailed information.'
+            );
+        }
+
+        return $success;
     }
 }

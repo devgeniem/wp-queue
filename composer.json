@@ -27,12 +27,13 @@
     },
     "scripts": {
         "lint": "vendor/bin/phpcs --standard=Geniem plugin.php src/",
+        "lint-without-warnings": "vendor/bin/phpcs --standard=Geniem plugin.php src/ --warning-severity=0",
         "cghooks": "vendor/bin/cghooks"
     },
     "extra": {
         "hooks": {
             "pre-commit": [
-                "composer lint"
+                "composer lint-without-warnings"
             ]
         }
     }
