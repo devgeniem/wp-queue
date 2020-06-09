@@ -34,6 +34,13 @@ interface QueueInterface {
     public function get_entry_handler() : callable;
 
     /**
+     * Getter for the entry fetcher.
+     *
+     * @return EntryFetcherInterface
+     */
+    public function get_entry_fetcher() : EntryFetcherInterface;
+
+    /**
      * Getter for the entries.
      *
      * @return Entry[]
@@ -53,6 +60,13 @@ interface QueueInterface {
      * @param EntryHandlerInterface $handler The entry handler.
      */
     public function set_entry_handler( EntryHandlerInterface $handler );
+
+    /**
+     * Setter for the entry fetcher.
+     *
+     * @param EntryFetcherInterface $fetcher The entry handler.
+     */
+    public function set_entry_fetcher( EntryFetcherInterface $fetcher );
 
     /**
      * Setter for the logger.

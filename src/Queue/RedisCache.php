@@ -14,7 +14,7 @@ use Geniem\ImportController\Interfaces\EntryHandlerInterface;
  *
  * @package Geniem\ImportController
  */
-class RedisCache {
+class RedisCache extends Base {
 
     /**
      * This hook name is used to add a WP Cron event for a queue.
@@ -69,16 +69,6 @@ class RedisCache {
     protected $redis;
 
     /**
-     * Get the name.
-     *
-     * @return string
-     */
-    public function get_name() : string {
-
-        return $this->name;
-    }
-
-    /**
      * Add the Redis prefix to a queue name.
      *
      * @param string $name The queue name.
@@ -87,26 +77,6 @@ class RedisCache {
      */
     protected function prefix_name( string $name ) : string {
         return static::QUEUE_PREFIX . $name;
-    }
-
-    /**
-     * Get the entry handler.
-     *
-     * @return callable|null
-     */
-    public function get_entry_handler() : ?callable {
-
-        return $this->entry_handler;
-    }
-
-    /**
-     * Get the entries.
-     *
-     * @return array|null
-     */
-    public function get_entries() : ?array {
-
-        return $this->entries;
     }
 
     /**
@@ -149,26 +119,6 @@ class RedisCache {
                 ]
             );
         }
-    }
-
-    /**
-     * Set the entry_handler.
-     *
-     * @param EntryHandlerInterface $entry_handler The callable to handle the single entry.
-     */
-    public function set_entry_handler( ?EntryHandlerInterface $entry_handler ) {
-        $this->entry_handler = $entry_handler;
-
-        return $this;
-    }
-
-    /**
-     * Set the entries.
-     *
-     * @param Entry[] $entries Entry data array.
-     */
-    public function set_entries( ?array $entries ) {
-        $this->entries = $entries;
     }
 
     /**

@@ -5,6 +5,9 @@
 
 namespace Geniem\ImportController;
 
+use Geniem\ImportController\CLI\Commands;
+use Geniem\ImportController\Queue\RedisCache;
+
 /**
  * Class ImportControllerPlugin
  *
@@ -115,6 +118,38 @@ final class ImportControllerPlugin {
      */
     protected function hooks() {
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
+
+        // Add the RedisCacheQueue as a WP-CLI dequeuer.
+        add_filter(
+            'gic_get_queue_redis_cache',
+            \Closure::fromCallable( [ $this, 'add_redis_cache_queue_for_cli_dequeuer' ] ),
+            2,
+            1
+        );
+    }
+
+    /**
+     * Initializes the WP-CLI functionalities.
+     *
+     * @return void
+     */
+    protected function init_cli() {
+        // Register the CLI commands if WP CLI is available.
+        if ( defined( 'WP_CLI' ) && WP_CLI ) {
+            \WP_CLI::add_command( 'gic', Commands::class );
+        }
+    }
+
+    /**
+     * Adds the RedisCacheQueue as a WP-CLI dequeuer.
+     *
+     * @param string $name The queue name.
+     * @return RedisCache
+     */
+    protected function add_redis_cache_queue_for_cli_dequeuer( string $name ) {
+        $queue = new RedisCache( $name );
+
+        return $queue;
     }
 
     /**
