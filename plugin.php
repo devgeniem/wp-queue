@@ -29,12 +29,12 @@ $plugin_path = __DIR__;
 // Initialize the plugin.
 ImportControllerPlugin::init( $plugin_version, $plugin_path );
 
-/**
- * Get the Import Controller plugin instance.
- *
- * @return ImportControllerPlugin
- */
 if ( ! function_exists( 'geniem_import_controller' ) ) {
+    /**
+     * Get the Import Controller plugin instance.
+     *
+     * @return ImportControllerPlugin
+     */
     function geniem_import_controller() : ImportControllerPlugin {
         return ImportControllerPlugin::plugin();
     }

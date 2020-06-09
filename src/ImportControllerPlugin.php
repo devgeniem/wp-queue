@@ -142,7 +142,8 @@ final class ImportControllerPlugin {
                 'import-controller-admin-js',
                 $this->plugin_uri . '/assets/dist/admin.js',
                 [ 'jquery' ],
-                $js_mod_time
+                $js_mod_time,
+                true
             );
         }
     }

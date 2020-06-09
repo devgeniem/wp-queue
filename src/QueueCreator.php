@@ -42,7 +42,9 @@ class QueueCreator {
      * @param EntryFetcherInterface $fetcher The entry fetcher instance.
      * @param EntryHandlerInterface $handler The entry handler instance.
      */
-    public function __construct( QueueInterface $queue, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler ) {
+    public function __construct(
+        QueueInterface $queue, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler
+    ) {
         $this->queue   = $queue;
         $this->fetcher = $fetcher;
         $this->handler = $handler;

@@ -112,15 +112,13 @@ class RedisCache {
     /**
      * Queue constructor.
      *
-     * @param string        $name          A unique name for the queue.
-     * @param callable|null $entry_handler The entry handler function.
-     * @param Entry[]|null    $entries       The queue data.
+     * @param string $name A unique name for the queue.
      */
     public function __construct( string $name ) {
         global $wp_object_cache;
 
-        $this->name   = $name;
-        $this->redis  = $wp_object_cache->redis_instance();
+        $this->name  = $name;
+        $this->redis = $wp_object_cache->redis_instance();
 
         // Set the default logger.
         $this->logger = new Logger();
@@ -217,7 +215,9 @@ class RedisCache {
             $this->redis->lPush( $key, ...array_map( 'maybe_serialize', array_values( $entries ) ) );
         }
         catch ( \Exception $e ) {
-            $this->logger->info( 'RedisCacheQueue - Unable to save the entries. Deleting it. Error: ' . $e->getMessage() );
+            $this->logger->info(
+                'RedisCacheQueue - Unable to save the entries. Deleting it. Error: ' . $e->getMessage()
+            );
             $this->delete();
             return;
         }
@@ -240,7 +240,9 @@ class RedisCache {
             }
         }
         catch ( \Exception $e ) {
-            $this->logger->error( 'RedisCacheQueue - Unable to save the queue. Deleting it. Error: ' . $e->getMessage() );
+            $this->logger->error(
+                'RedisCacheQueue - Unable to save the queue. Deleting it. Error: ' . $e->getMessage()
+            );
             $this->delete();
             return;
         }
@@ -347,7 +349,10 @@ class RedisCache {
             $lock_set = $this->redis->setnx( $lock_key, 1 ) === true;
 
             if ( ! $lock_set ) {
-                $this->logger->info( 'RedisCacheQueue - Stopping a dequeue process. The queue is locked', [ $this->name ] );
+                $this->logger->info(
+                    'RedisCacheQueue - Stopping a dequeue process. The queue is locked',
+                    [ $this->name ]
+                );
 
                 return null;
             }

@@ -18,14 +18,17 @@ class Dequeuer {
     /**
      * The callback for dequeueing queues.
      *
-     * @param string      $name   The queue name.
-     * @param Logger|null $logger An optional PSR-3 compatible logger instance.
+     * @param QueueInterface $queue  The queue name.
+     * @param Logger|null    $logger An optional PSR-3 compatible logger instance.
      *
      * @return QueueInterface|null The queue instance or null on failure.
      */
     public function dequeue( QueueInterface $queue, ?LoggerInterface $logger = null ) : ?QueueInterface {
         if ( ! $queue instanceof QueueInterface ) {
-            $logger->error( 'Unable to dequeue. The queue is not of type: ' . QueueInterface::class . '.', [ __CLASS__ ] );
+            $logger->error(
+                'Unable to dequeue. The queue is not of type: ' . QueueInterface::class . '.',
+                [ __CLASS__ ]
+            );
             return null;
         }
 
@@ -51,11 +54,14 @@ class Dequeuer {
         }
         catch ( \Exception $error ) {
             if ( $logger ) {
-                $logger->error( "An error occurred while dequeueing from queue: $name.", [
-                    'message' => $error->getMessage(),
-                    'file' => $error->getFile(),
-                    'line' => $error->getLine(),
-                ] );
+                $logger->error(
+                    "An error occurred while dequeueing from queue: $name.",
+                    [
+                        'message' => $error->getMessage(),
+                        'file'    => $error->getFile(),
+                        'line'    => $error->getLine(),
+                    ]
+                );
             }
 
             return null;
