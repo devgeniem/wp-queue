@@ -60,7 +60,7 @@ class DequeueCommand implements Command {
             return false;
         }
 
-        $dequeuer = new Dequeuer();
+        $dequeuer = new Dequeuer( $logger );
 
         $success = $dequeuer->dequeue( $queue );
 
