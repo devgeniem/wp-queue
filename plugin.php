@@ -12,7 +12,7 @@
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-use Geniem\Queue\QueuePlugin;
+namespace Geniem\Queue;
 
 // Check if Composer has been initialized in this directory.
 // Otherwise we just use global composer autoloading.
@@ -29,13 +29,5 @@ $plugin_path = __DIR__;
 // Initialize the plugin.
 QueuePlugin::init( $plugin_version, $plugin_path );
 
-if ( ! function_exists( 'geniem_import_controller' ) ) {
-    /**
-     * Get the Import Controller plugin instance.
-     *
-     * @return QueuePlugin
-     */
-    function geniem_import_controller() : QueuePlugin {
-        return QueuePlugin::plugin();
-    }
-}
+// Require global functions.
+require_once __DIR__ . '/src/api.php';
