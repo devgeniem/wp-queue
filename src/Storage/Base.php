@@ -4,7 +4,7 @@
  * This class groups basic method implementations.
  */
 
-namespace Geniem\Queue\Engine;
+namespace Geniem\Queue\Storage;
 
 use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\EntryFetcherInterface;
@@ -17,7 +17,14 @@ use Geniem\Queue\Interfaces\StorageInterface;
 abstract class Base implements StorageInterface {
 
     /**
-     * The function for processing single entries.
+     * The entry fetcher instance.
+     *
+     * @var EntryFetcherInterface|null
+     */
+    protected $entry_fetcher;
+
+    /**
+     * The entry handler instance.
      *
      * @var EntryHanderInterface|null
      */

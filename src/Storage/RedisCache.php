@@ -5,6 +5,7 @@
 
 namespace Geniem\Queue\Storage;
 
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
 use Geniem\Queue\Logger;
 use Psr\Log\LoggerInterface;
 use Geniem\Queue\Interfaces\EntryHandlerInterface;
@@ -69,13 +70,17 @@ class RedisCache extends Base {
     /**
      * Queue constructor.
      *
-     * @param string $name A unique name for the queue.
+     * @param string                $name    A unique name for the queue.
+     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
+     * @param EntryHandlerInterface $handler The entry handler instance.
      */
-    public function __construct( string $name ) {
+    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler ) {
         global $wp_object_cache;
 
-        $this->name  = $name;
-        $this->redis = $wp_object_cache->redis_instance();
+        $this->name          = $name;
+        $this->redis         = $wp_object_cache->redis_instance();
+        $this->entry_fetcher = $fetcher;
+        $this->entry_handler = $handler;
 
         // Set the default logger.
         $this->logger = new Logger();
