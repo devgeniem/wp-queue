@@ -1,7 +1,7 @@
 {
-    "name": "devgeniem/wp-import-controller",
+    "name": "devgeniem/wp-queue",
     "type": "wordpress-muplugin",
-    "description": "A WordPress mu-plugin providing a modular multipurpose importer logic.",
+    "description": "WordPress Queue is a modular library for managing queued tasks in WordPress.",
     "authors": [
         {
             "name": "Ville Siltala",
@@ -11,7 +11,7 @@
         }
     ],
     "keywords": [
-        "wordpress", "mu-plugin", "importer"
+        "wordpress", "mu-plugin", "queue", "background process", "asynchronous"
     ],
     "license": "GPL-3.0-or-later",
     "minimum-stability": "dev",
