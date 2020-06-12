@@ -1,24 +1,24 @@
 <?php
 /**
- * This file initializes all plugin functionalities.
+ * This class initializes all plugin functionalities.
  */
 
-namespace Geniem\ImportController;
+namespace Geniem\Queue;
 
-use Geniem\ImportController\CLI\Commands;
-use Geniem\ImportController\Queue\RedisCache;
+use Geniem\Queue\CLI\Commands;
+use Geniem\Queue\Queue\RedisCache;
 
 /**
- * Class ImportControllerPlugin
+ * Class QueuePlugin
  *
- * @package Geniem\ImportControllerNameSpace
+ * @package Geniem\QueueNameSpace
  */
-final class ImportControllerPlugin {
+final class QueuePlugin {
 
     /**
      * Holds the singleton.
      *
-     * @var ImportControllerPlugin
+     * @var QueuePlugin
      */
     protected static $instance;
 
@@ -32,9 +32,9 @@ final class ImportControllerPlugin {
     /**
      * Get the instance.
      *
-     * @return ImportControllerPlugin
+     * @return QueuePlugin
      */
-    public static function get_instance() : ImportControllerPlugin {
+    public static function get_instance() : QueuePlugin {
         return self::$instance;
     }
 
@@ -95,7 +95,7 @@ final class ImportControllerPlugin {
     /**
      * Get the plugin instance.
      *
-     * @return ImportControllerPlugin
+     * @return QueuePlugin
      */
     public static function plugin() {
         return static::$instance;
@@ -121,7 +121,7 @@ final class ImportControllerPlugin {
 
         // Add the RedisCacheQueue as a WP-CLI dequeuer.
         add_filter(
-            'gic_get_queue_redis_cache',
+            'wpq_get_queue_redis_cache',
             \Closure::fromCallable( [ $this, 'add_redis_cache_queue_for_cli_dequeuer' ] ),
             2,
             1
@@ -136,7 +136,7 @@ final class ImportControllerPlugin {
     protected function init_cli() {
         // Register the CLI commands if WP CLI is available.
         if ( defined( 'WP_CLI' ) && WP_CLI ) {
-            \WP_CLI::add_command( 'gic', Commands::class );
+            \WP_CLI::add_command( 'queue', Commands::class );
         }
     }
 

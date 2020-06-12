@@ -1,3 +1,3 @@
-# WordPress Import Controller
+# WordPress Queue
 
-WordPress Import Controller mu-plugin is a modular implementation for a queue based WordPress importer.
+WordPress Queue is a modular library for managing queued tasks in WordPress.

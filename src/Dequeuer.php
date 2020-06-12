@@ -3,15 +3,15 @@
  * The dequeue controller.
  */
 
-namespace Geniem\ImportController;
+namespace Geniem\Queue;
 
 use Psr\Log\LoggerInterface;
-use Geniem\ImportController\Interfaces\QueueInterface;
+use Geniem\Queue\Interfaces\EngingeInterface;
 
 /**
- * Class DequeuController
+ * Class Dequeuer
  *
- * @package Geniem\ImportController
+ * @package Geniem\Queue
  */
 class Dequeuer {
 
@@ -35,14 +35,14 @@ class Dequeuer {
     /**
      * The callback for dequeueing queues.
      *
-     * @param QueueInterface $queue  The queue name.
+     * @param EngingeInterface $queue  The queue name.
      *
      * @return bool True for success, false on failure.
      */
-    public function dequeue( QueueInterface $queue ) {
-        if ( ! $queue instanceof QueueInterface ) {
+    public function dequeue( EngingeInterface $queue ) {
+        if ( ! $queue instanceof EngingeInterface ) {
             $this->logger->error(
-                'Unable to dequeue. The queue is not of type: ' . QueueInterface::class . '.',
+                'Unable to dequeue. The queue is not of type: ' . EngingeInterface::class . '.',
                 [ __CLASS__ ]
             );
             return false;
@@ -58,14 +58,14 @@ class Dequeuer {
         // Run the first entry.
         try {
             // Run hooks before the dequeue is executed.
-            do_action( 'gic_before_dequeue', $queue );
-            do_action( 'gic_before_dequeue_' . $name, $queue );
+            do_action( 'wpq_before_dequeue', $queue );
+            do_action( 'wpq_before_dequeue_' . $name, $queue );
 
             $queue->dequeue();
 
             // Run hooks after the dequeue is done.
-            do_action( 'gic_after_dequeue', $queue );
-            do_action( 'gic_after_dequeue_' . $name, $queue );
+            do_action( 'wpq_after_dequeue', $queue );
+            do_action( 'wpq_after_dequeue_' . $name, $queue );
 
             return true;
         }

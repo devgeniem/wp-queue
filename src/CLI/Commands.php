@@ -3,26 +3,26 @@
  * WP-CLI command implementations.
  */
 
-namespace Geniem\ImportController\CLI;
+namespace Geniem\Queue\CLI;
 
 use Exception;
 use WP_CLI;
-use Geniem\ImportController\Dequeuer;
-use Geniem\ImportController\Interfaces\QueueInterface;
-use Geniem\ImportController\QueueCreator;
+use Geniem\Queue\Dequeuer;
+use Geniem\Queue\Interfaces\EngingeInterface;
+use Geniem\Queue\QueueCreator;
 use Psr\Log\LoggerInterface;
 
 /**
- * Run Geniem Import Controller commands.
+ * Run WordPress Queue commands.
  *
  * ## EXAMPLES
  *
  *     # Create a queue with the RedisCache queue with the name 'my_queue'.
- *     $ wp gci create redis_cache my_queue
+ *     $ wp queue create redis_cache my_queue
  *     Success: The queue "my_queue" was created successfully!
  *
  *     # Dequeue a single entry from a RedisCache queue with the name 'my_queue'.
- *     $ wp gci dequeue redis_cache my_queue
+ *     $ wp queue dequeue redis_cache my_queue
  *     Success: Dequeue for "my_queue" was executed successfully!
  */
 class Commands {
@@ -35,10 +35,10 @@ class Commands {
      * ## OPTIONS
      *
      * <type>
-     * : The queue type. The type is appended to 'gic_get_queue_{type}' filter to fetch the correct queue instance.
+     * : The queue type. The type is appended to 'wpq_get_queue_{type}' filter to fetch the correct queue instance.
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'gic_get_queue_{type}' filter to be passed for the queue constructor.
+     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{type}' filter to be passed for the queue constructor.
      *
      * ## EXAMPLES
      *
@@ -66,16 +66,16 @@ class Commands {
         }
 
         // Default the queue and logger values to null.
-        add_filter( 'gic_get_queue_' . $queue_type, '__return_null', 0, 0 );
+        add_filter( 'wpq_get_queue_' . $queue_type, '__return_null', 0, 0 );
 
         /**
          * Fetch the queue by its type and by name.
          *
-         * @var QueueInterface
+         * @var EngingeInterface
          */
-        $queue = apply_filters( 'gic_get_queue_' . $queue_type, $queue_name );
+        $queue = apply_filters( 'wpq_get_queue_' . $queue_type, $queue_name );
 
-        if ( ! $queue instanceof QueueInterface ) {
+        if ( ! $queue instanceof EngingeInterface ) {
             WP_CLI::error( 'No queue found for type "' . $queue_type . '".' );
             return false;
         }
@@ -117,13 +117,13 @@ class Commands {
      * ## OPTIONS
      *
      * <type>
-     * : The queue type. The type is appended to 'gic_get_queue_{type}' filter to fetch the correct queue instance.
+     * : The queue type. The type is appended to 'wpq_get_queue_{type}' filter to fetch the correct queue instance.
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'gic_get_queue_{type}' filter to be passed for the queue constructor.
+     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{type}' filter to be passed for the queue constructor.
      *
      * [<logger>]
-     * : The optional dequeue logger type. The type is appended to 'gic_get_dequeue_logger_' filter to fetch the correct logger instance. Note, set the logger for the queue before returning the instance on the 'gic_get_queue_{type}' filter. // phpcs:ignore
+     * : The optional dequeue logger type. The type is appended to 'wpq_get_dequeue_logger_' filter to fetch the correct logger instance. Note, set the logger for the queue before returning the instance on the 'wpq_get_queue_{type}' filter. // phpcs:ignore
      *
      * ## EXAMPLES
      *
@@ -131,7 +131,7 @@ class Commands {
      *     $ wp gci dequeue redis_cache my_queue
      *     Success: Dequeue for "my_queue" was executed successfully!
      *
-     *     # Use a custom logger for the dequeuer. Return your PSR-3 logger instance with the 'gic_get_logger_my_logger' filter.
+     *     # Use a custom logger for the dequeuer. Return your PSR-3 logger instance with the 'wpq_get_logger_my_logger' filter.
      *     $ wp gci dequeue redis_cache my_queue my_logger
      *     Success: Dequeue for "my_queue" was executed successfully!
      *
@@ -156,24 +156,24 @@ class Commands {
         }
 
         // Default the queue and logger values to null.
-        add_filter( 'gic_get_queue_' . $queue_type, '__return_null', 0, 0 );
-        add_filter( 'gic_get_dequeue_logger_' . $queue_logger, '__return_null', 0, 0 );
+        add_filter( 'wpq_get_queue_' . $queue_type, '__return_null', 0, 0 );
+        add_filter( 'wpq_get_dequeue_logger_' . $queue_logger, '__return_null', 0, 0 );
 
         /**
          * Fetch the queue by its type and by name.
          *
-         * @var QueueInterface
+         * @var EngingeInterface
          */
-        $queue = apply_filters( 'gic_get_queue_' . $queue_type, $queue_name );
+        $queue = apply_filters( 'wpq_get_queue_' . $queue_type, $queue_name );
 
         /**
          * Fetch a logger for the dequeuer.
          *
          * @var LoggerInterface
          */
-        $logger = apply_filters( 'gic_get_dequeue_logger_' . $queue_logger, $queue_name );
+        $logger = apply_filters( 'wpq_get_dequeue_logger_' . $queue_logger, $queue_name );
 
-        if ( ! $queue instanceof QueueInterface ) {
+        if ( ! $queue instanceof EngingeInterface ) {
             WP_CLI::error( 'No queue found for type "' . $queue_type . '".' );
             return false;
         }

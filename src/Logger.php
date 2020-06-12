@@ -3,14 +3,14 @@
  * The logger.
  */
 
-namespace Geniem\ImportController;
+namespace Geniem\Queue;
 
 use Psr\Log\LoggerInterface;
 
 /**
  * Class Logger
  *
- * @package Geniem\ImportController
+ * @package Geniem\Queue
  */
 class Logger implements LoggerInterface {
 
@@ -203,7 +203,7 @@ class Logger implements LoggerInterface {
             '' :
             ' - Context: ' . addslashes( str_replace( PHP_EOL, '', print_r( $context, true ) ) ); // phpcs:ignore
         $context = preg_replace( '/(\s+)/', ' ', $context ); // Remove multiple consecutive spaces.
-        error_log( "Geniem Logger - $level - $message$context" ); // phpcs:ignore
+        error_log( "Queue Logger - $level - $message$context" ); // phpcs:ignore
     }
 
 }

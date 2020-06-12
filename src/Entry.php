@@ -3,14 +3,16 @@
  * The import controller queue entry class.
  */
 
-namespace Geniem\ImportController;
+namespace Geniem\Queue;
+
+use Geniem\Queue\Interfaces\EntryInterface;
 
 /**
  * The Entry class.
  *
- * @package Geniem\ImportController
+ * @package Geniem\Queue
  */
-class Entry {
+class Entry implements EntryInterface {
 
     /**
      * Entry data.

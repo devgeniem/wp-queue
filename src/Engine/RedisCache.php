@@ -3,16 +3,16 @@
  * The Redis Cache implementation of an import queue.
  */
 
-namespace Geniem\ImportController\Queue;
+namespace Geniem\Engine\Queue;
 
-use Geniem\ImportController\Logger;
+use Geniem\Queue\Logger;
 use Psr\Log\LoggerInterface;
-use Geniem\ImportController\Interfaces\EntryHandlerInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 
 /**
  * Class RedisCache
  *
- * @package Geniem\ImportController
+ * @package Geniem\Queue
  */
 class RedisCache extends Base {
 

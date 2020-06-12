@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:       WordPress Import Controller
+ * Plugin Name:       WordPress Queue
  * Plugin URI:        https://github.com/devgeniem/wp-import-controller
- * Description:       This plugin adds a modular multipurpose importer logic to WordPress.
+ * Description:       WordPress Queue is a modular library for managing queued tasks in WordPress.
  * Version:           1.0.0
  * Requires at least: 5.4
  * Requires PHP:      7.0
@@ -12,7 +12,7 @@
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-use Geniem\ImportController\ImportControllerPlugin;
+use Geniem\Queue\QueuePlugin;
 
 // Check if Composer has been initialized in this directory.
 // Otherwise we just use global composer autoloading.
@@ -27,15 +27,15 @@ $plugin_version = $plugin_data['Version'];
 $plugin_path = __DIR__;
 
 // Initialize the plugin.
-ImportControllerPlugin::init( $plugin_version, $plugin_path );
+QueuePlugin::init( $plugin_version, $plugin_path );
 
 if ( ! function_exists( 'geniem_import_controller' ) ) {
     /**
      * Get the Import Controller plugin instance.
      *
-     * @return ImportControllerPlugin
+     * @return QueuePlugin
      */
-    function geniem_import_controller() : ImportControllerPlugin {
-        return ImportControllerPlugin::plugin();
+    function geniem_import_controller() : QueuePlugin {
+        return QueuePlugin::plugin();
     }
 }

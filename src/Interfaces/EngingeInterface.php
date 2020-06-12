@@ -3,14 +3,14 @@
  * Defines the import controller queue interface.
  */
 
-namespace Geniem\ImportController\Interfaces;
+namespace Geniem\Queue\Interfaces;
 
 use Psr\Log\LoggerInterface;
 
 /**
  * Use this interface to customize the queue logic.
  */
-interface QueueInterface {
+interface EngingeInterface {
 
     /**
      * Queue constructor.
@@ -43,14 +43,14 @@ interface QueueInterface {
     /**
      * Getter for the entries.
      *
-     * @return Entry[]
+     * @return EntryInterface[]
      */
     public function get_entries() : array;
 
     /**
      * Setter for the entries.
      *
-     * @param Entry[] $entries The queue entries.
+     * @param EntryInterface[] $entries The queue entries.
      */
     public function set_entries( array $entries );
 

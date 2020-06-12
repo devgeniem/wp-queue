@@ -1,7 +1,7 @@
 {
-    "name": "wp-import-controller",
+    "name": "wp-queue",
     "version": "1.0.0",
-    "description": "A WordPress mu-plugin providing a modular multipurpose importer logic.",
+    "description": "WordPress Queue is a modular library for managing queued tasks in WordPress.",
     "private": true,
     "dependencies": {
         "idempotent-babel-polyfill": "^7.4.4"

@@ -3,9 +3,9 @@
  * Defines the entry handler logic.
  */
 
-namespace Geniem\ImportController\Interfaces;
+namespace Geniem\Queue\Interfaces;
 
-use Geniem\ImportController\Entry;
+use Geniem\Queue\Entry;
 
 /**
  * Use this interface to define an entry handler.

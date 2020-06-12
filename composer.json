@@ -16,7 +16,7 @@
     "license": "GPL-3.0-or-later",
     "minimum-stability": "dev",
     "autoload": {
-        "psr-4": {"Geniem\\ImportController\\": "src/"}
+        "psr-4": {"Geniem\\Queue\\": "src/"}
     },
     "require": {
         "psr/log": "^1.1.3"

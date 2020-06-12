@@ -4,16 +4,16 @@
  * This class groups basic method implementations.
  */
 
-namespace Geniem\ImportController\Queue;
+namespace Geniem\Queue\Engine;
 
-use Geniem\ImportController\Interfaces\EntryFetcherInterface;
-use Geniem\ImportController\Interfaces\EntryHandlerInterface;
-use Geniem\ImportController\Interfaces\QueueInterface;
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
+use Geniem\Queue\Interfaces\EngingeInterface;
 
 /**
  * Base class for queues.
  */
-abstract class Base implements QueueInterface {
+abstract class Base implements EngingeInterface {
 
     /**
      * Get the name.

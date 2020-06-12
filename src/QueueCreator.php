@@ -3,11 +3,11 @@
  * The queue creator.
  */
 
-namespace Geniem\ImportController;
+namespace Geniem\Queue;
 
-use Geniem\ImportController\Interfaces\QueueInterface;
-use Geniem\ImportController\Interfaces\EntryFetcherInterface;
-use Geniem\ImportController\Interfaces\EntryHandlerInterface;
+use Geniem\Queue\Interfaces\EngingeInterface;
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 
 /**
  * Queue creation logic.
@@ -17,7 +17,7 @@ class QueueCreator {
     /**
      * The queue instance.
      *
-     * @var QueueInterface
+     * @var EngingeInterface
      */
     protected $queue;
 
@@ -38,12 +38,12 @@ class QueueCreator {
     /**
      * QueueCreator constructor.
      *
-     * @param QueueInterface        $queue   The queue instance.
+     * @param EngingeInterface      $queue   The queue instance.
      * @param EntryFetcherInterface $fetcher The entry fetcher instance.
      * @param EntryHandlerInterface $handler The entry handler instance.
      */
     public function __construct(
-        QueueInterface $queue, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler
+        EngingeInterface $queue, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler
     ) {
         $this->queue   = $queue;
         $this->fetcher = $fetcher;
