@@ -141,18 +141,6 @@ final class QueuePlugin {
     }
 
     /**
-     * Adds the RedisCacheQueue as a WP-CLI dequeuer.
-     *
-     * @param string $name The queue name.
-     * @return RedisCache
-     */
-    protected function add_redis_cache_queue_for_cli_dequeuer( string $name ) {
-        $queue = new RedisCache( $name );
-
-        return $queue;
-    }
-
-    /**
      * Enqueue admin side scripts if they exist.
      */
     public function enqueue_admin_scripts() {

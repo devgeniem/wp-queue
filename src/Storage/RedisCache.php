@@ -3,11 +3,12 @@
  * The Redis Cache implementation of an import queue.
  */
 
-namespace Geniem\Engine\Queue;
+namespace Geniem\Queue\Storage;
 
 use Geniem\Queue\Logger;
 use Psr\Log\LoggerInterface;
 use Geniem\Queue\Interfaces\EntryHandlerInterface;
+use Geniem\Queue\Interfaces\EntryInterface;
 
 /**
  * Class RedisCache
@@ -39,20 +40,6 @@ class RedisCache extends Base {
      * @var string
      */
     protected $name;
-
-    /**
-     * The function for processing single entries.
-     *
-     * @var callable|null
-     */
-    protected $entry_handler;
-
-    /**
-     * The queue entry data array.
-     *
-     * @var Entry[]|null
-     */
-    protected $entries;
 
     /**
      * The logger instance.
@@ -290,9 +277,9 @@ class RedisCache extends Base {
         try {
             $this->load_entry_handler();
 
-            // Do nothing if the handler is not callable.
-            if ( ! is_callable( $this->entry_handler ) ) {
-                throw new \Exception( 'RedisCacheQueue - The entry handler is not a callable.' );
+            // Do nothing if the handler is not the correct type.
+            if ( ! $this->entry_handler instanceof EntryHandlerInterface ) {
+                throw new \Exception( 'RedisCacheQueue - The entry handler is the wrong type.' );
             }
 
             // Try to set a lock. If this returns true, the queue was successfully locked.
@@ -300,7 +287,7 @@ class RedisCache extends Base {
 
             if ( ! $lock_set ) {
                 $this->logger->info(
-                    'RedisCacheQueue - Stopping a dequeue process. The queue is locked',
+                    'RedisCacheQueue - Stopping a dequeue process. The queue is locked.',
                     [ $this->name ]
                 );
 
@@ -308,19 +295,19 @@ class RedisCache extends Base {
             }
             else {
                 // Do not lock for eternity.
-                $this->redis->expire( $lock_key, apply_filters( 'geniem_queue_lock_ttl', 5 * MINUTE_IN_SECONDS ) );
+                $lock_ttl = apply_filters( 'wordpress_queue_redis_cache_lock_ttl', 5 * MINUTE_IN_SECONDS );
+                $this->redis->expire( $lock_key, $lock_ttl );
             }
 
             $raw_entry = $this->redis->lIndex( $this->get_entries_key(), 0 );
             $entry     = maybe_unserialize( $raw_entry );
 
-            call_user_func( $this->entry_handler, $entry );
+            $this->entry_handler->handle( $entry );
 
             // Handling was successful. Pop the entry out.
             $this->redis->lPop( $this->get_entries_key() );
 
             if ( $this->is_empty() ) {
-                $this->delete();
                 $this->logger->info( 'RedisCacheQueue - The queue is finished.', [ $this->name ] );
             }
             else {
@@ -366,18 +353,22 @@ class RedisCache extends Base {
     }
 
     /**
-     * Adds an entry at the beginning of the queue.
+     * Adds an entry at the and of the queue.
      *
-     * @param mixed $entry The entry.
-     * @return int|bool The new length of the list in case of success, FALSE in case of Failure
+     * @param EntryInterface $entry The entry.
      */
-    public function enqueue( $entry ) {
+    public function enqueue( EntryInterface $entry ) {
         try {
-            $success = $this->redis->lPush( $this->get_entries_key(), maybe_serialize( $entry ) );
-            return $success;
+            $name   = $this->get_name();
+            $length = $this->redis->rPush( $this->get_entries_key(), maybe_serialize( $entry ) );
+            $this->logger->info( "RedisCacheQueue - Enqueued a new entry into queue: \"$name\". Length: $length." );
         }
-        catch ( \Exception $e ) {
-            $this->logger->error( 'RedisCacheQueue - Unable the enqueue a new entry. Error: ' . $e->getMessage() );
+        catch ( \Exception $err ) {
+            $message = $err->getMessage();
+            $this->logger->error(
+                "RedisCacheQueue - Unable the enqueue a new entry into queue: \"$name\". Error: $message",
+                $err->getTrace()
+            );
             return null;
         }
     }

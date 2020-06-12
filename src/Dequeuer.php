@@ -6,7 +6,7 @@
 namespace Geniem\Queue;
 
 use Psr\Log\LoggerInterface;
-use Geniem\Queue\Interfaces\EngingeInterface;
+use Geniem\Queue\Interfaces\StorageInterface;
 
 /**
  * Class Dequeuer
@@ -35,14 +35,14 @@ class Dequeuer {
     /**
      * The callback for dequeueing queues.
      *
-     * @param EngingeInterface $queue  The queue name.
+     * @param StorageInterface $queue  The queue name.
      *
      * @return bool True for success, false on failure.
      */
-    public function dequeue( EngingeInterface $queue ) {
-        if ( ! $queue instanceof EngingeInterface ) {
+    public function dequeue( StorageInterface $queue ) {
+        if ( ! $queue instanceof StorageInterface ) {
             $this->logger->error(
-                'Unable to dequeue. The queue is not of type: ' . EngingeInterface::class . '.',
+                'Unable to dequeue. The queue is not of type: ' . StorageInterface::class . '.',
                 [ __CLASS__ ]
             );
             return false;

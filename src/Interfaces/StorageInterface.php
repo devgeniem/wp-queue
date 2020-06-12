@@ -10,14 +10,16 @@ use Psr\Log\LoggerInterface;
 /**
  * Use this interface to customize the queue logic.
  */
-interface EngingeInterface {
+interface StorageInterface {
 
     /**
      * Queue constructor.
      *
-     * @param string $name A unique name for the queue.
+     * @param string                $name    A unique name for the queue.
+     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
+     * @param EntryHandlerInterface $handler The entry handler instance.
      */
-    public function __construct( string $name );
+    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler );
 
     /**
      * Getter for the queue name.
@@ -102,6 +104,14 @@ interface EngingeInterface {
      * @return void
      */
     public function dequeue();
+
+    /**
+     * Adds an entry at the end of the queue.
+     *
+     * @param EntryInterface $entry An entry instance.
+     * @return void
+     */
+    public function enqueue( EntryInterface $entry );
 
     /**
      * Save the queue. Rewrites all entries.

@@ -6,14 +6,29 @@
 
 namespace Geniem\Queue\Engine;
 
+use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\EntryFetcherInterface;
 use Geniem\Queue\Interfaces\EntryHandlerInterface;
-use Geniem\Queue\Interfaces\EngingeInterface;
+use Geniem\Queue\Interfaces\StorageInterface;
 
 /**
  * Base class for queues.
  */
-abstract class Base implements EngingeInterface {
+abstract class Base implements StorageInterface {
+
+    /**
+     * The function for processing single entries.
+     *
+     * @var EntryHanderInterface|null
+     */
+    protected $entry_handler;
+
+    /**
+     * The queue entry data array.
+     *
+     * @var EntryInterface[]|null
+     */
+    protected $entries;
 
     /**
      * Get the name.

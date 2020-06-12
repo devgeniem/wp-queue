@@ -8,7 +8,7 @@
  * Requires PHP:      7.0
  * Author:            Geniem
  * Author URI:        https://geniem.com/
- * License:           GPL v3 or later
+ * License:           MIT
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.html
  */
 

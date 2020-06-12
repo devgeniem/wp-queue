@@ -13,12 +13,13 @@
     "keywords": [
         "wordpress", "mu-plugin", "queue", "background process", "asynchronous"
     ],
-    "license": "GPL-3.0-or-later",
+    "license": "MIT",
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {"Geniem\\Queue\\": "src/"}
     },
     "require": {
+        "php": "^7.2",
         "psr/log": "^1.1.3"
     },
     "require-dev": {
