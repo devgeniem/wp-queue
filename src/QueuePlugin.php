@@ -118,14 +118,6 @@ final class QueuePlugin {
      */
     protected function hooks() {
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
-
-        // Add the RedisCacheQueue as a WP-CLI dequeuer.
-        add_filter(
-            'wpq_get_queue_redis_cache',
-            \Closure::fromCallable( [ $this, 'add_redis_cache_queue_for_cli_dequeuer' ] ),
-            2,
-            1
-        );
     }
 
     /**
