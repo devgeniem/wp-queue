@@ -25,10 +25,12 @@ class Entry implements EntryInterface {
      * Setter for the data.
      *
      * @param mixed $data The data.
-     * @return void
+     * @return self
      */
-    public function set_data( $data ) {
+    public function set_data( $data ) : EntryInterface {
         $this->data = $data;
+
+        return $this;
     }
 
     /**
