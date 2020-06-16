@@ -28,7 +28,7 @@
     },
     "scripts": {
         "lint": "vendor/bin/phpcs --standard=Geniem plugin.php src/",
-        "lint-without-warnings": "vendor/bin/phpcs --standard=Geniem plugin.php src/ --warning-severity=0",
+        "lint-without-warnings": "vendor/bin/phpcs --standard=Geniem plugin.php src/ --warning-severity=8",
         "cghooks": "vendor/bin/cghooks"
     },
     "extra": {
