@@ -30,7 +30,7 @@ use Psr\Log\LoggerInterface;
 class Commands {
 
     /**
-     * Create an import queue.
+     * Create a queue.
      *
      * phpcs:disable
      *
@@ -190,7 +190,7 @@ class Commands {
     }
 
     /**
-     * Dequeues a single entry from a queue.
+     * Dequeue a single entry from a queue.
      *
      * phpcs:disable
      *
