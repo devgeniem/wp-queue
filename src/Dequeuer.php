@@ -33,7 +33,7 @@ class Dequeuer {
     }
 
     /**
-     * The callback for dequeueing queues.
+     * Dequeues an entry from a queue.
      *
      * @param StorageInterface $queue  The queue name.
      *
