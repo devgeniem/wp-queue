@@ -54,14 +54,14 @@ class Commands {
         $queue_name = $args[0] ?? null;
 
         if ( empty( $queue_name ) ) {
-            WP_CLI::error( 'Please define the queue name as the second command argument.' );
+            WP_CLI::error( 'Please define the queue name as the first command argument.' );
             return false;
         }
 
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface
+         * @var StorageInterface $queue
          */
         $queue = apply_filters( "wpq_get_queue_$queue_name", null );
 
@@ -90,11 +90,58 @@ class Commands {
 
         try {
             $queue_creator->create();
-            WP_CLI::success( 'The queue "' . $queue_name . '" was created successfully!' );
+            WP_CLI::success( "The queue \"$queue_name\" was created successfully!" );
             return true;
         }
         catch ( Exception $err ) {
             WP_CLI::error( $err->getMessage() );
+            return false;
+        }
+    }
+
+    /**
+     * Delete a queue. All entries are cleared and then the queue data is deleted.
+     *
+     * phpcs:disable
+     *
+     * ## OPTIONS
+     *
+     * <name>
+     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     *
+     * ## EXAMPLES
+     *
+     *     # Clear entries and delete all queue data from a RedisCache queue with the name 'my_queue'.
+     *     $ wp gci delete my_queue
+     *     Success: The queue was deleted succesfully!
+     *
+     * phpcs:enable
+     *
+     * @param array $args The command parameters.
+     * @return boolean
+     */
+    public function delete( array $args = [] ) : bool {
+        $queue_name = $args[0] ?? null;
+
+        if ( empty( $queue_name ) ) {
+            WP_CLI::error( 'Please define the queue name as the first command argument.' );
+            return false;
+        }
+
+        /**
+         * Fetch a queue by name.
+         *
+         * @var StorageInterface $queue
+         */
+        $queue = apply_filters( "wpq_get_queue_$queue_name", null );
+
+        try {
+            $queue->delete();
+            WP_CLI::success( "The queue \"$queue_name\" was deleted successfully!" );
+            return true;
+        }
+        catch ( Exception $err ) {
+            WP_CLI::error( 'An error occurred while deleting the queue: ' . $err->getMessage() );
             return false;
         }
     }
@@ -143,7 +190,7 @@ class Commands {
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface
+         * @var StorageInterface $queue
          */
         $queue = apply_filters( 'wpq_get_queue_' . $queue_name, $queue );
 
@@ -152,7 +199,7 @@ class Commands {
          *
          * The logger defaults to an instance of the \Geniem\Queue\Logger.
          *
-         * @var LoggerInterface
+         * @var LoggerInterface $queue_logger
          */
         $queue_logger = apply_filters( 'wpq_get_enqueue_logger', $queue_logger );
 
@@ -161,7 +208,7 @@ class Commands {
          *
          * The logger defaults to an instance of the \Geniem\Queue\Logger.
          *
-         * @var LoggerInterface
+         * @var LoggerInterface $queue_logger
          */
         $queue_logger = apply_filters( 'wpq_get_enqueue_logger_' . $logger_name, $queue_logger, $queue_name );
 
@@ -180,7 +227,7 @@ class Commands {
 
         try {
             $enqueuer->enqueue( $queue );
-            WP_CLI::success( 'The queue "' . $queue_name . '" was created successfully!' );
+            WP_CLI::success( "Entries for queue \"$queue_name\" were enqueued successfully!" );
             return true;
         }
         catch ( Exception $err ) {
@@ -240,7 +287,7 @@ class Commands {
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface
+         * @var StorageInterface $queue
          */
         $queue = apply_filters( 'wpq_get_queue_' . $queue_name, $queue );
 
@@ -249,7 +296,7 @@ class Commands {
          *
          * The logger defaults to an instance of the \Geniem\Queue\Logger.
          *
-         * @var LoggerInterface
+         * @var LoggerInterface $queue_logger
          */
         $queue_logger = apply_filters( 'wpq_get_dequeue_logger', $queue_logger );
 
@@ -258,7 +305,7 @@ class Commands {
          *
          * The logger defaults to an instance of the \Geniem\Queue\Logger.
          *
-         * @var LoggerInterface
+         * @var LoggerInterface $queue_logger
          */
         $queue_logger = apply_filters( 'wpq_get_dequeue_logger_' . $logger_name, $queue_logger, $queue_name );
 
@@ -278,7 +325,7 @@ class Commands {
         $success = $dequeuer->dequeue( $queue );
 
         if ( $success ) {
-            WP_CLI::success( 'Dequeue for "' . $queue_name . '" was executed successfully!' );
+            WP_CLI::success( "Dequeue for the queue \"$queue_name\" was executed successfully!" );
         }
         else {
             WP_CLI::error(

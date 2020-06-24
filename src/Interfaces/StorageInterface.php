@@ -126,4 +126,18 @@ interface StorageInterface {
      * @return void
      */
     public function save();
+
+    /**
+     * Delete the entire queue. This method should remove all entries by calling clear().
+     *
+     * @return void
+     */
+    public function delete();
+
+    /**
+     * Clear all entries.
+     *
+     * @return void
+     */
+    public function clear();
 }

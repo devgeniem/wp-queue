@@ -5,6 +5,7 @@
 
 namespace Geniem\Queue\Storage;
 
+use Exception;
 use Geniem\Queue\Interfaces\EntryFetcherInterface;
 use Geniem\Queue\Logger;
 use Psr\Log\LoggerInterface;
@@ -100,7 +101,7 @@ class RedisCache extends Base {
                 $this->entry_handler = $object->entry_handler ?? null;
             }
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->error(
                 'RedisCacheQueue - An error occurred while loading the entry handler.',
                 [
@@ -148,15 +149,13 @@ class RedisCache extends Base {
         $entries = $this->entries;
         $key     = $this->get_entries_key();
         try {
-            // Delete old list first by trimming off elements in batches of 100.
-            while ( $this->redis->llen( $key ) > 0 ) {
-                $this->redis->ltrim( $key, 0, -99 );
-            }
+            // Delete old entries first.
+            $this->clear();
 
             // Push all serialized entries into the empty list.
             $this->redis->lPush( $key, ...array_map( 'maybe_serialize', array_values( $entries ) ) );
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->info(
                 'RedisCacheQueue - Unable to save the entries. Deleting it. Error: ' . $e->getMessage()
             );
@@ -181,7 +180,7 @@ class RedisCache extends Base {
                 $this->logger->info( 'RedisCacheQueue - "' . $this->name . '" saved!' );
             }
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->error(
                 'RedisCacheQueue - Unable to save the queue. Deleting it. Error: ' . $e->getMessage()
             );
@@ -196,9 +195,9 @@ class RedisCache extends Base {
     /**
      * Delete the queue.
      *
-     * @return bool
+     * @throws Exception An exception is thrown if the deletion fails.
      */
-    public function delete() : bool {
+    public function delete() {
         try {
             // Expire lock.
             $this->redis->pExpire( $this->get_lock_key(), 1 );
@@ -206,21 +205,28 @@ class RedisCache extends Base {
             // Expire basic data.
             $this->redis->pExpire( $this->get_storage_key(), 1 );
 
-            $key = $this->get_entries_key();
-
-            // Delete entry list first by trimming off elements in batches of 100.
-            while ( $this->redis->llen( $key ) > 0 ) {
-                $this->redis->ltrim( $key, 0, -99 );
-            }
+            // Clear entries.
+            $this->clear();
 
             $this->exists = false;
-
-            return true;
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->error( 'RedisCacheQueue - Unable to delete queue. Error: ' . $e->getMessage() );
+            throw $e;
+        }
+    }
 
-            return false;
+    /**
+     * Clear all entries.
+     *
+     * @return void
+     */
+    public function clear() {
+        $key = $this->get_entries_key();
+
+        // Delete the entry list by trimming off elements in batches of 100.
+        while ( $this->redis->llen( $key ) > 0 ) {
+            $this->redis->ltrim( $key, 0, -99 );
         }
     }
 
@@ -236,7 +242,7 @@ class RedisCache extends Base {
 
             return $this->exists;
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->error( 'RedisCacheQueue - Unable to check existence. Error: ' . $e->getMessage() );
             return false;
         }
@@ -260,7 +266,7 @@ class RedisCache extends Base {
         try {
             return intval( $this->redis->llen( $this->get_entries_key() ) );
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->error( 'RedisCacheQueue - Unable to read queue length. Error: ' . $e->getMessage() );
 
             return 0;
@@ -271,7 +277,7 @@ class RedisCache extends Base {
      * Run an event from the queue and store the rest.
      *
      * @return mixed Returns the popped entry or null on failure.
-     * @throws \Exception An exception is thrown if the entry handler is not a callable.
+     * @throws Exception An exception is thrown if the entry handler is not a callable.
      */
     public function dequeue() {
         $this->logger->info( 'RedisCacheQueue - Dequeueing event from queue: ' . $this->name );
@@ -284,7 +290,7 @@ class RedisCache extends Base {
 
             // Do nothing if the handler is not the correct type.
             if ( ! $this->entry_handler instanceof EntryHandlerInterface ) {
-                throw new \Exception( 'RedisCacheQueue - The entry handler is the wrong type.' );
+                throw new Exception( 'RedisCacheQueue - The entry handler is the wrong type.' );
             }
 
             // Try to set a lock. If this returns true, the queue was successfully locked.
@@ -319,7 +325,7 @@ class RedisCache extends Base {
                 $this->logger->info( 'RedisCacheQueue - Dequeued.', [ $this->name ] );
             }
         }
-        catch ( \Exception $e ) {
+        catch ( Exception $e ) {
             $this->logger->error(
                 'RedisCacheQueue - An error occurred while dequeueing.',
                 [
@@ -339,7 +345,7 @@ class RedisCache extends Base {
                 // This is more optimized than deleting a key.
                 $this->redis->pExpire( $lock_key, 1 );
             }
-            catch ( \Exception $e ) {
+            catch ( Exception $e ) {
                 $this->logger->error(
                     'RedisCacheQueue - An error occurred while deleting the lock.',
                     [
@@ -368,7 +374,7 @@ class RedisCache extends Base {
             $length = $this->redis->rPush( $this->get_entries_key(), maybe_serialize( $entry ) );
             $this->logger->info( "RedisCacheQueue - Enqueued a new entry into queue: \"$name\". Length: $length." );
         }
-        catch ( \Exception $err ) {
+        catch ( Exception $err ) {
             $message = $err->getMessage();
             $this->logger->error(
                 "RedisCacheQueue - Unable the enqueue a new entry into queue: \"$name\". Error: $message",
