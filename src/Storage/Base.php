@@ -6,6 +6,7 @@
 
 namespace Geniem\Queue\Storage;
 
+use Psr\Log\LoggerInterface;
 use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\EntryFetcherInterface;
 use Geniem\Queue\Interfaces\EntryHandlerInterface;
@@ -36,6 +37,13 @@ abstract class Base implements StorageInterface {
      * @var EntryInterface[]|null
      */
     protected $entries;
+
+    /**
+     * The logger.
+     *
+     * @var Logger|null
+     */
+    protected $logger;
 
     /**
      * Get the name.
@@ -74,6 +82,15 @@ abstract class Base implements StorageInterface {
     }
 
     /**
+     * Get the logger.
+     *
+     * @return LoggerInterface|null
+     */
+    public function get_logger() : ?LoggerInterface {
+        return $this->logger;
+    }
+
+    /**
      * Set the entry handler.
      *
      * @param EntryHandlerInterface $entry_handler The callable to handle the single entry.
@@ -102,5 +119,14 @@ abstract class Base implements StorageInterface {
      */
     public function set_entries( ?array $entries ) {
         $this->entries = $entries;
+    }
+
+    /**
+     * Setter for the logger.
+     *
+     * @param LoggerInterface $logger A PSR-3 compatible logger instance.
+     */
+    public function set_logger( LoggerInterface $logger ) {
+        $this->logger = $logger;
     }
 }

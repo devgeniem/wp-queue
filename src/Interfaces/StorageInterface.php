@@ -50,6 +50,13 @@ interface StorageInterface {
     public function get_entries() : ?array;
 
     /**
+     * Getter for the logger.
+     *
+     * @return LoggerInterface|null
+     */
+    public function get_logger() : ?LoggerInterface;
+
+    /**
      * Setter for the entries.
      *
      * @param EntryInterface[] $entries The queue entries.
