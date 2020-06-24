@@ -88,6 +88,7 @@ final class QueuePlugin {
     public static function init( $version, $plugin_path ) {
         if ( empty( static::$instance ) ) {
             static::$instance = new self( $version, $plugin_path );
+            static::$instance->init_cli();
             static::$instance->hooks();
         }
     }
