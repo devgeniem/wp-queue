@@ -198,7 +198,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    protected function log( string $level, $message, array $context = [] ) {
+    public function log( string $level, $message, array $context = [] ) {
         $context = empty( $context ) ?
             '' :
             ' - Context: ' . addslashes( str_replace( PHP_EOL, '', print_r( $context, true ) ) ); // phpcs:ignore
