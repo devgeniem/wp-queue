@@ -73,7 +73,7 @@ class Commands {
         $entry_handler = $queue->get_entry_handler();
         $entry_fetcher = $queue->get_entry_fetcher();
 
-        if ( $entry_handler || $entry_fetcher ) {
+        if ( empty( $entry_handler ) || empty( $entry_fetcher ) ) {
             WP_CLI::error(
                 'The queue must have both the entry handler and the entry fetcher set before creating the queue.'
             );
