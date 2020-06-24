@@ -107,7 +107,7 @@ class RedisCache extends Base {
                 [
                     'name'    => $this->name,
                     'message' => $e->getMessage(),
-                    'file'    => $e->getLine(),
+                    'file'    => $e->getFile(),
                     'line'    => $e->getLine(),
                 ]
             );
@@ -331,7 +331,7 @@ class RedisCache extends Base {
                 [
                     'name'    => $this->name,
                     'message' => $e->getMessage(),
-                    'file'    => $e->getLine(),
+                    'file'    => $e->getFile(),
                     'line'    => $e->getLine(),
                 ]
             );
@@ -351,7 +351,7 @@ class RedisCache extends Base {
                     [
                         'name'    => $this->name,
                         'message' => $e->getMessage(),
-                        'file'    => $e->getLine(),
+                        'file'    => $e->getFile(),
                         'line'    => $e->getLine(),
                     ]
                 );
