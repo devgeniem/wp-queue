@@ -40,9 +40,9 @@ abstract class Base implements StorageInterface {
     /**
      * Get the name.
      *
-     * @return string
+     * @return string|null
      */
-    public function get_name() : string {
+    public function get_name() : ?string {
         return $this->name;
     }
 

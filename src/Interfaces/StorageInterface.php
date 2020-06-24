@@ -24,30 +24,30 @@ interface StorageInterface {
     /**
      * Getter for the queue name.
      *
-     * @return string
+     * @return string|null
      */
-    public function get_name() : string;
+    public function get_name() : ?string;
 
     /**
      * Getter for the entry handler.
      *
-     * @return callable
+     * @return EntryHandlerInterface|null
      */
-    public function get_entry_handler() : callable;
+    public function get_entry_handler() : ?EntryHandlerInterface;
 
     /**
      * Getter for the entry fetcher.
      *
-     * @return EntryFetcherInterface
+     * @return EntryFetcherInterface|null
      */
-    public function get_entry_fetcher() : EntryFetcherInterface;
+    public function get_entry_fetcher() : ?EntryFetcherInterface;
 
     /**
      * Getter for the entries.
      *
-     * @return EntryInterface[]
+     * @return EntryInterface[]|null
      */
-    public function get_entries() : array;
+    public function get_entries() : ?array;
 
     /**
      * Setter for the entries.
