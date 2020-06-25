@@ -66,7 +66,7 @@ class Commands {
         $queue = apply_filters( "wpq_get_queue_$queue_name", null );
 
         if ( ! $queue instanceof StorageInterface ) {
-            WP_CLI::error( 'No queue found with name "' . $queue_name . '".' );
+            WP_CLI::error( "No queue found with the name \"$queue_name\"." );
             return false;
         }
 
@@ -135,6 +135,11 @@ class Commands {
          */
         $queue = apply_filters( "wpq_get_queue_$queue_name", null );
 
+        if ( ! $queue instanceof StorageInterface ) {
+            WP_CLI::error( "No queue found with the name \"$queue_name\"." );
+            return false;
+        }
+
         try {
             $queue->delete();
             WP_CLI::success( "The queue \"$queue_name\" was deleted successfully!" );
@@ -171,11 +176,6 @@ class Commands {
         $queue_name  = $args[0] ?? null;
         $logger_name = $args[1] ?? '';
 
-        if ( empty( $queue_type ) ) {
-            WP_CLI::error( 'Please define the queue type as the first command argument.' );
-            return false;
-        }
-
         if ( empty( $queue_name ) ) {
             WP_CLI::error( 'Please define the queue name as the second command argument.' );
             return false;
@@ -194,6 +194,11 @@ class Commands {
          */
         $queue = apply_filters( 'wpq_get_queue_' . $queue_name, $queue );
 
+        if ( ! $queue instanceof StorageInterface ) {
+            WP_CLI::error( "No queue found with the name \"$queue_name\"." );
+            return false;
+        }
+
         /**
          * Replace the logger with the global filter.
          *
@@ -211,11 +216,6 @@ class Commands {
          * @var LoggerInterface $queue_logger
          */
         $queue_logger = apply_filters( 'wpq_get_enqueue_logger_' . $logger_name, $queue_logger, $queue_name );
-
-        if ( ! $queue instanceof StorageInterface ) {
-            WP_CLI::error( 'No queue found for type "' . $queue_type . '".' );
-            return false;
-        }
 
         try {
             $enqueuer = new Enqueuer( $queue_logger );
@@ -268,11 +268,6 @@ class Commands {
         $queue_name  = $args[0] ?? null;
         $logger_name = $args[1] ?? '';
 
-        if ( empty( $queue_type ) ) {
-            WP_CLI::error( 'Please define the queue type as the first command argument.' );
-            return false;
-        }
-
         if ( empty( $queue_name ) ) {
             WP_CLI::error( 'Please define the queue name as the second command argument.' );
             return false;
@@ -291,6 +286,11 @@ class Commands {
          */
         $queue = apply_filters( 'wpq_get_queue_' . $queue_name, $queue );
 
+        if ( ! $queue instanceof StorageInterface ) {
+            WP_CLI::error( "No queue found with the name \"$queue_name\"." );
+            return false;
+        }
+
         /**
          * Replace the logger with the global filter.
          *
@@ -308,11 +308,6 @@ class Commands {
          * @var LoggerInterface $queue_logger
          */
         $queue_logger = apply_filters( 'wpq_get_dequeue_logger_' . $logger_name, $queue_logger, $queue_name );
-
-        if ( ! $queue instanceof StorageInterface ) {
-            WP_CLI::error( 'No queue found for type "' . $queue_type . '".' );
-            return false;
-        }
 
         try {
             $dequeuer = new Dequeuer( $queue_logger );
