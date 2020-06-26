@@ -203,7 +203,12 @@ class Logger implements LoggerInterface {
             '' :
             ' - Context: ' . addslashes( str_replace( PHP_EOL, '', print_r( $context, true ) ) ); // phpcs:ignore
         $context = preg_replace( '/(\s+)/', ' ', $context ); // Remove multiple consecutive spaces.
-        error_log( "Queue Logger - $level - $message$context" ); // phpcs:ignore
+        if ( defined( 'WP_CLI' ) && WP_CLI ) {
+            \WP_CLI::log( "Queue Logger - $level - $message$context" );
+        }
+        else {
+            error_log( "Queue Logger - $level - $message$context" ); // phpcs:ignore
+        }
     }
 
 }
