@@ -286,6 +286,12 @@ class RedisCache extends Base {
         $lock_set = false;
 
         try {
+            // Nothing to do if the queue is empty.
+            if ( $this->is_empty() ) {
+                $this->logger->info( 'RedisCacheQueue - Nothing to dequeue. The queue is empty.', [ $this->name ] );
+                return;
+            }
+
             $this->load_entry_handler();
 
             // Do nothing if the handler is not the correct type.
@@ -302,7 +308,7 @@ class RedisCache extends Base {
                     [ $this->name ]
                 );
 
-                return null;
+                return;
             }
             else {
                 // Do not lock for eternity.
@@ -335,8 +341,6 @@ class RedisCache extends Base {
                     'line'    => $e->getLine(),
                 ]
             );
-
-            $entry = null;
         }
 
         if ( $lock_set ) {
@@ -359,8 +363,6 @@ class RedisCache extends Base {
                 $entry = null;
             }
         }
-
-        return $entry;
     }
 
     /**
