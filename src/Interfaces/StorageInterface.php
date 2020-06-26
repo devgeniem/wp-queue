@@ -103,7 +103,7 @@ interface StorageInterface {
      *
      * @return integer
      */
-    public function get_count() : int;
+    public function size() : int;
 
     /**
      * Runs an entry from the queue and removes it from the queue.

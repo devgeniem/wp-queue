@@ -254,7 +254,7 @@ class RedisCache extends Base {
      * @return bool
      */
     public function is_empty() : bool {
-        return $this->get_count() === 0;
+        return $this->size() === 0;
     }
 
     /**
@@ -262,7 +262,7 @@ class RedisCache extends Base {
      *
      * @return bool
      */
-    public function get_count() : int {
+    public function size() : int {
         try {
             return intval( $this->redis->llen( $this->get_entries_key() ) );
         }

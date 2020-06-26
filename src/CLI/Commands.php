@@ -41,8 +41,8 @@ class Commands {
      *
      * ## EXAMPLES
      *
-     *     # Create a queue with the RedisCache queue with the name 'my_queue'.
-     *     $ wp gci create my_queue
+     *     # Create a queue with the name 'my_queue'.
+     *     $ wp queue create my_queue
      *     Success: Dequeue executed successfully!
      *
      * phpcs:enable
@@ -111,8 +111,8 @@ class Commands {
      *
      * ## EXAMPLES
      *
-     *     # Clear entries and delete all queue data from a RedisCache queue with the name 'my_queue'.
-     *     $ wp gci delete my_queue
+     *     # Clear entries and delete all queue data from a queue with the name 'my_queue'.
+     *     $ wp queue delete my_queue
      *     Success: The queue was deleted succesfully!
      *
      * phpcs:enable
@@ -152,6 +152,59 @@ class Commands {
     }
 
     /**
+     * Check the number of entries in a queue.
+     *
+     * phpcs:disable
+     *
+     * ## OPTIONS
+     *
+     * <name>
+     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     *
+     * ## EXAMPLES
+     *
+     *     # Check the size of a queue with the name 'my_queue'.
+     *     $ wp queue size my_queue
+     *     Success: There are 5 entries in the queue.
+     *
+     * phpcs:enable
+     *
+     * @param array $args The command parameters.
+     * @return boolean
+     */
+    public function size( array $args = [] ) : bool {
+        $queue_name = $args[0] ?? null;
+
+        if ( empty( $queue_name ) ) {
+            WP_CLI::error( 'Please define the queue name as the first command argument.' );
+            return false;
+        }
+
+        /**
+         * Fetch a queue by name.
+         *
+         * @var StorageInterface $queue
+         */
+        $queue = apply_filters( "wpq_get_queue_$queue_name", null );
+
+        if ( ! $queue instanceof StorageInterface ) {
+            WP_CLI::error( "No queue found with the name \"$queue_name\"." );
+            return false;
+        }
+
+        try {
+            $size_text = ngettext( 'is %d entry', 'are %d entries', $queue->size() );
+
+            WP_CLI::success( "There $size_text in the queue." );
+            return true;
+        }
+        catch ( Exception $err ) {
+            WP_CLI::error( 'An error occurred while getting the queue size: ' . $err->getMessage() );
+            return false;
+        }
+    }
+
+    /**
      * Fetch new entries and add them to the queue.
      *
      * phpcs:disable
@@ -163,8 +216,8 @@ class Commands {
      *
      * ## EXAMPLES
      *
-     *     # Create a queue with the RedisCache queue with the name 'my_queue'.
-     *     $ wp gci enqueue my_queue
+     *     # Create a queue with the name 'my_queue'.
+     *     $ wp queue enqueue my_queue
      *     Success: 5 new entries added to the queue!
      *
      * phpcs:enable
@@ -251,12 +304,12 @@ class Commands {
      *
      * ## EXAMPLES
      *
-     *     # Dequeue a single entry from a RedisCache queue with the name 'my_queue'.
-     *     $ wp gci dequeue my_queue
+     *     # Dequeue a single entry from a queue with the name 'my_queue'.
+     *     $ wp queue dequeue my_queue
      *     Success: Dequeue for "my_queue" was executed successfully!
      *
      *     # Use a custom logger for the dequeuer. Return your PSR-3 logger instance with the 'wpq_get_logger_my_logger' filter.
-     *     $ wp gci dequeue my_queue my_logger
+     *     $ wp queue dequeue my_queue my_logger
      *     Success: Dequeue for "my_queue" was executed successfully!
      *
      * phpcs:enable
