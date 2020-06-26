@@ -193,7 +193,10 @@ class Commands {
         }
 
         try {
-            $size_text = ngettext( 'is %d entry', 'are %d entries', $queue->size() );
+            $size_text = sprintf(
+                ngettext( 'is %d entry', 'are %d entries', $queue->size(), ),
+                $queue->size()
+            );
 
             WP_CLI::success( "There $size_text in the queue." );
             return true;
