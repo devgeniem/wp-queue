@@ -1,6 +1,6 @@
 <?php
 /**
- * The Redis Cache implementation of an import queue.
+ * Storage implementation for the Redis Object Cache Drop-In.
  */
 
 namespace Geniem\Queue\Storage;
@@ -76,15 +76,26 @@ class RedisCache extends Base {
      * @param EntryHandlerInterface $handler The entry handler instance.
      */
     public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler ) {
-        global $wp_object_cache;
-
         $this->name          = $name;
-        $this->redis         = $wp_object_cache->redis_instance();
         $this->entry_fetcher = $fetcher;
         $this->entry_handler = $handler;
+        $this->redis         = $this->get_redis_instance();
 
         // Set the default logger.
         $this->logger = new Logger();
+    }
+
+    /**
+     * A safe method for accessing the Redis instance in Redis Object Cache.
+     *
+     * @return mixed|null
+     */
+    private function get_redis_instance() {
+        global $wp_object_cache;
+        if ( method_exists( $wp_object_cache, 'redis_instance' ) ) {
+            return $wp_object_cache->redis_instance();
+        }
+        return null;
     }
 
     /**
@@ -220,13 +231,20 @@ class RedisCache extends Base {
      * Clear all entries.
      *
      * @return void
+     * @throws Exception Throws an error if Redis commands fail.
      */
     public function clear() {
         $key = $this->get_entries_key();
 
         // Delete the entry list by trimming off elements in batches of 100.
-        while ( $this->redis->llen( $key ) > 0 ) {
-            $this->redis->ltrim( $key, 0, -99 );
+        try {
+            while ( $this->redis->llen( $key ) > 0 ) {
+                $this->redis->ltrim( $key, 0, -99 );
+            }
+        }
+        catch ( Exception $e ) {
+            $this->logger->error( 'RedisCacheQueue - Unable to clear the queue. Error: ' . $e->getMessage() );
+            throw $e;
         }
     }
 
