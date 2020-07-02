@@ -114,4 +114,4 @@ wp queue dequeue my_queue
 
 ## License
 
-Code released under the [MIT License](https://github.com/twbs/bootstrap/blob/master/LICENSE).
+Code released under the [MIT License](./LICENSE).
