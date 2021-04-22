@@ -403,4 +403,29 @@ class RedisCache extends Base {
             return null;
         }
     }
+
+    /**
+     * Checks if entry exists in queue.
+     *
+     * @param EntryInterface $entry The entry.
+     *
+     * @return bool
+     */
+    public function entry_exists( EntryInterface $entry ) : bool {
+        try {
+            $entry_exists = $this->redis->EXISTS( $this->get_entries_key(), maybe_serialize( $entry ) );
+
+            if ( $entry_exists ) {
+                $name = $this->get_name();
+                $id   = $entry->get_data()['entry_id'];
+                $this->logger->info( "Entry $id already in queue \"$name\", skipping" );
+            }
+            return $entry_exists;
+        }
+        catch ( Exception $e ) {
+            $this->logger->error( 'RedisCacheQueue - Unable to check entry key. Error: ' . $e->getMessage() );
+
+            return false;
+        }
+    }
 }
