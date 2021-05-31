@@ -5,13 +5,13 @@
 
 use Geniem\Queue\QueuePlugin;
 
-if ( ! function_exists( 'wordpress_queue' ) ) {
+if ( ! function_exists( 'wpq' ) ) {
     /**
      * Get the WordPress Queue plugin instance.
      *
      * @return QueuePlugin
      */
-    function wordpress_queue() : QueuePlugin {
+    function wpq() : QueuePlugin {
         return QueuePlugin::plugin();
     }
 }

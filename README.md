@@ -19,28 +19,24 @@ Queue functionalities are defined with the `\Geniem\Queue\Interfaces\StorageInte
 
 ## Queue creation
 
-When creating a new queue, all its entries should be stored in the protected `$entries` property as an instance of a class implementing the `\Geniem\Queue\Interfaces\EntryInterface`. The actual entry data is untyped, but we encourage keeping the type consistent withing a specific queue. The actual entry handler can be created by implementing the `\Geniem\Queue\Interfaces\EntryFetcherInterface` interface.
+When creating a new queue, all its entries should be stored in the protected `$entries` property as an instance of a class implementing the `\Geniem\Queue\Interfaces\EntryInterface`. The actual entry data is untyped, but we encourage keeping the type consistent withing a specific queue. The actual entry handler can be created by implementing the `\Geniem\Queue\Interfaces\FetchableInterface` interface.
 
 The queue creation is handled with the `Geniem\Queue\QueueCreator` class. This ensures all dependecies are strictly typed and injected in place.
 
 ## Dequeueing
 
-The dequeue process is handled by the `Geniem\Queue\Dequeuer`. It is always instantiated with a [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logger. All dequeues are logged in a standardized way through the given logger. The logger can be replaced with a filter globally or for a specific queue.
+The dequeue process is handled by the `Geniem\Queue\Dequeuer`. It is always instantiated with a [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logger. All dequeues are logged in a standardized way through the given logger. The logger can be replaced with a filter.
 
 ```php
 // Replace globally.
 add_filter( 'wpq_get_dequeue_logger', function( $logger ) {
     return new MyPSR3Logger();
-} )
-// Replace for a specific queue.
-add_filter( 'wpq_get_dequeue_logger_my_queue', function( $logger ) {
-    return new MyPSR3Logger();
-} )
+} );
 ```
 
 ## Usage
 
-To create a new queue, you must first define an entry fetcher and an entry handler. The entry fetcher is defined by the `EntryFetcherInterface` and the handler is defined by `EntryHandlerInterface`. Implement these interfaces in your corresponding classes.
+To create a new queue, you must first define an entry fetcher and an entry handler. The entry fetcher is defined by the `FetchableInterface` and the handler is defined by `HandleableInterface`. Implement these interfaces in your corresponding classes.
 
 ### Examples
 
@@ -49,7 +45,7 @@ In the following examples we create a simple fetcher returning an array of entri
 #### Fetcher example
 
 ```php
-class MyFetcher implements \Geniem\Queue\Interfaces\EntryFetcherInterface {
+class MyFetcher implements \Geniem\Queue\Interfaces\FetchableInterface {
 
     public function fetch() : ?array {
         $entry_data = [
@@ -74,7 +70,7 @@ class MyFetcher implements \Geniem\Queue\Interfaces\EntryFetcherInterface {
 #### Handler example
 
 ```php
-class MyHandler implements \Geniem\Queue\Interfaces\EntryHandlerInterface {
+class MyHandler implements \Geniem\Queue\Interfaces\HandleableInterface {
 
     public function handle( \Geniem\Queue\Interfaces\EntryInterface $entry ) {
         error_log( 'Entry data: ' . $entry->get_data() );
@@ -83,29 +79,46 @@ class MyHandler implements \Geniem\Queue\Interfaces\EntryHandlerInterface {
 }
 ```
 
-### WP-CLI example
+### Usage example
 
-To allow WordPress Queue to find our example queue by its name "my_queue", we must define it through a filter. Here we use the default RedisCache as our queue storage.
+To allow WordPress Queue to find our example queue by its name "my_queue", we must define it by adding it to the queue container in the `wpq_add_queue` hook. Here we use the default RedisQueue as our queue instance. To add a new queue into the container call the `add` method. To replace an existing one with the same name, call the `replace` method.
 
 ```php
-add_filter( 'wpq_get_queue_my_queue', function() {
-    $redis_queue = new Geniem\Queue\Storage\RedisCache();
+do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
+    $redis_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
     $redis_queue->set_entry_fetcher( new MyFetcher() );
     $redis_queue->set_entry_handler( new MyHandler() );
-    return $redis_queue;
-}, 1, 0 );
+    
+    $container->add( $redis_queue );
+}, 1, 1 );
 ```
 
-Creating the queue:
+### WP CLI commands
+
+After the queue has been instantiated and added to the queue container, you can start to interact with it through WP CLI.
+
+#### Create
+
+To create the queue, call the WP CLI `create` command. This will run the entry fetcher if one is set for the queue and (re)create the queue by saving it with the newly fetched entries.
 
 ```
 wp queue create my_queue
 ```
 
-Dequeueing a single entry from the queue:
+#### Dequeue
+
+After creating, you can dequeue a single entry from the queue:
 
 ```
 wp queue dequeue my_queue
+```
+
+#### Fetch
+
+To fetch more entries to the queue, run the `fetch` command. This command will try to call the fetcher's `fetch` method and append the found entries to the queue.
+
+```
+wp queue fetch my_queue
 ```
 
 ## Contributors

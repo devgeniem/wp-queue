@@ -6,11 +6,11 @@
 namespace Geniem\Queue\CLI;
 
 use Exception;
+use Psr\Container\ContainerInterface;
 use WP_CLI;
 use Geniem\Queue\Dequeuer;
 use Geniem\Queue\Enqueuer;
-use Geniem\Queue\Interfaces\StorageInterface;
-use Geniem\Queue\Logger;
+use Geniem\Queue\Interfaces\QueueInterface;
 use Geniem\Queue\QueueCreator;
 use Psr\Log\LoggerInterface;
 
@@ -28,6 +28,32 @@ use Psr\Log\LoggerInterface;
  *     Success: Dequeue for "my_queue" was executed successfully!
  */
 class Commands {
+
+    /**
+     * Holds the queue container.
+     *
+     * @var ContainerInterface
+     */
+    protected $queue_container;
+
+    /**
+     * The logger instance.
+     *
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * Commands constructor.
+     */
+    public function __construct() {
+        $plugin = wpq();
+
+        // Get and set the queue container.
+        $this->queue_container = $plugin->get_queue_container();
+        // Get the plugin logger.
+        $this->logger = $plugin->get_logger();
+    }
 
     /**
      * Create a queue.
@@ -61,21 +87,20 @@ class Commands {
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface $queue
+         * @var QueueInterface $queue
          */
-        $queue = apply_filters( "wpq_get_queue_$queue_name", null );
+        $queue = $this->queue_container->get( $queue_name );
 
-        if ( ! $queue instanceof StorageInterface ) {
+        if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
             return false;
         }
 
         $entry_handler = $queue->get_entry_handler();
-        $entry_fetcher = $queue->get_entry_fetcher();
 
-        if ( empty( $entry_handler ) || empty( $entry_fetcher ) ) {
+        if ( empty( $entry_handler ) ) {
             WP_CLI::error(
-                'The queue must have both the entry handler and the entry fetcher set before creating the queue.'
+                'The queue must contain an entry handler before creating the queue.'
             );
             return false;
         }
@@ -131,11 +156,11 @@ class Commands {
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface $queue
+         * @var QueueInterface $queue
          */
         $queue = apply_filters( "wpq_get_queue_$queue_name", null );
 
-        if ( ! $queue instanceof StorageInterface ) {
+        if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
             return false;
         }
@@ -183,11 +208,11 @@ class Commands {
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface $queue
+         * @var QueueInterface $queue
          */
         $queue = apply_filters( "wpq_get_queue_$queue_name", null );
 
-        if ( ! $queue instanceof StorageInterface ) {
+        if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
             return false;
         }
@@ -219,18 +244,17 @@ class Commands {
      *
      * ## EXAMPLES
      *
-     *     # Create a queue with the name 'my_queue'.
-     *     $ wp queue enqueue my_queue
-     *     Success: 5 new entries added to the queue!
+     *     # Fetch and enqueue new entries to the queue by the name 'my_queue'.
+     *     $ wp queue fetch my_queue
+     *     Success: "Entries for queue "my_queue" were enqueued successfully!"
      *
      * phpcs:enable
      *
      * @param array $args The command parameters.
      * @return boolean
      */
-    public function enqueue( array $args = [] ) : bool {
-        $queue_name  = $args[0] ?? null;
-        $logger_name = $args[1] ?? '';
+    public function fetch( array $args = [] ) : bool {
+        $queue_name = $args[0] ?? null;
 
         if ( empty( $queue_name ) ) {
             WP_CLI::error( 'Please define the queue name as the second command argument.' );
@@ -240,41 +264,20 @@ class Commands {
         // Default the queue value to null.
         $queue = null;
 
-        // Use the default logger.
-        $queue_logger = new Logger();
-
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface $queue
+         * @var QueueInterface $queue
          */
-        $queue = apply_filters( 'wpq_get_queue_' . $queue_name, $queue );
+        $queue = $this->queue_container->get( $queue_name );
 
-        if ( ! $queue instanceof StorageInterface ) {
+        if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
             return false;
         }
 
-        /**
-         * Replace the logger with the global filter.
-         *
-         * The logger defaults to an instance of the \Geniem\Queue\Logger.
-         *
-         * @var LoggerInterface $queue_logger
-         */
-        $queue_logger = apply_filters( 'wpq_get_enqueue_logger', $queue_logger );
-
-        /**
-         * Fetch a logger for the enqueuer.
-         *
-         * The logger defaults to an instance of the \Geniem\Queue\Logger.
-         *
-         * @var LoggerInterface $queue_logger
-         */
-        $queue_logger = apply_filters( 'wpq_get_enqueue_logger_' . $logger_name, $queue_logger, $queue_name );
-
         try {
-            $enqueuer = new Enqueuer( $queue_logger );
+            $enqueuer = new Enqueuer( $this->logger );
         }
         catch ( Exception $err ) {
             WP_CLI::error( $err->getMessage() );
@@ -302,17 +305,10 @@ class Commands {
      * <name>
      * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
      *
-     * [<logger>]
-     * : The optional dequeue logger type. The type is appended to 'wpq_get_dequeue_logger_{logger}' filter to fetch the correct logger instance. Note, set the logger for the queue before returning the instance on the 'wpq_get_queue_{type}' filter. // phpcs:ignore
-     *
      * ## EXAMPLES
      *
      *     # Dequeue a single entry from a queue with the name 'my_queue'.
      *     $ wp queue dequeue my_queue
-     *     Success: Dequeue for "my_queue" was executed successfully!
-     *
-     *     # Use a custom logger for the dequeuer. Return your PSR-3 logger instance with the 'wpq_get_logger_my_logger' filter.
-     *     $ wp queue dequeue my_queue my_logger
      *     Success: Dequeue for "my_queue" was executed successfully!
      *
      * phpcs:enable
@@ -321,8 +317,7 @@ class Commands {
      * @return boolean
      */
     public function dequeue( array $args = [] ) : bool {
-        $queue_name  = $args[0] ?? null;
-        $logger_name = $args[1] ?? '';
+        $queue_name = $args[0] ?? null;
 
         if ( empty( $queue_name ) ) {
             WP_CLI::error( 'Please define the queue name as the second command argument.' );
@@ -332,41 +327,20 @@ class Commands {
         // Default the queue value to null.
         $queue = null;
 
-        // Use the default logger.
-        $queue_logger = new Logger();
-
         /**
          * Fetch a queue by name.
          *
-         * @var StorageInterface $queue
+         * @var QueueInterface $queue
          */
-        $queue = apply_filters( 'wpq_get_queue_' . $queue_name, $queue );
+        $queue = $this->queue_container->get( $queue_name );
 
-        if ( ! $queue instanceof StorageInterface ) {
+        if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
             return false;
         }
 
-        /**
-         * Replace the logger with the global filter.
-         *
-         * The logger defaults to an instance of the \Geniem\Queue\Logger.
-         *
-         * @var LoggerInterface $queue_logger
-         */
-        $queue_logger = apply_filters( 'wpq_get_dequeue_logger', $queue_logger );
-
-        /**
-         * Fetch a logger for the dequeuer.
-         *
-         * The logger defaults to an instance of the \Geniem\Queue\Logger.
-         *
-         * @var LoggerInterface $queue_logger
-         */
-        $queue_logger = apply_filters( 'wpq_get_dequeue_logger_' . $logger_name, $queue_logger, $queue_name );
-
         try {
-            $dequeuer = new Dequeuer( $queue_logger );
+            $dequeuer = new Dequeuer( $this->logger );
         }
         catch ( Exception $err ) {
             WP_CLI::error( $err->getMessage() );

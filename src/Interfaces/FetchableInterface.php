@@ -10,7 +10,7 @@ use Geniem\Queue\Entry;
 /**
  * Use this interface to define an entry fetcher.
  */
-interface EntryFetcherInterface {
+interface FetchableInterface {
 
     /**
      * The method must return an array of entries or null.

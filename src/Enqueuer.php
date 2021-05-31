@@ -7,7 +7,7 @@ namespace Geniem\Queue;
 
 use Geniem\Queue\Interfaces\EntryInterface;
 use Psr\Log\LoggerInterface;
-use Geniem\Queue\Interfaces\StorageInterface;
+use Geniem\Queue\Interfaces\QueueInterface;
 
 /**
  * Class Enqueuer
@@ -36,14 +36,14 @@ class Enqueuer {
     /**
      * Fetch new entries and add them to the queue.
      *
-     * @param StorageInterface $queue  The queue name.
+     * @param QueueInterface $queue The queue name.
      *
      * @return int Number of entries enqueued. Negative integer on error.
      */
-    public function enqueue( StorageInterface $queue ) : int {
-        if ( ! $queue instanceof StorageInterface ) {
+    public function enqueue( QueueInterface $queue ) : int {
+        if ( ! $queue instanceof QueueInterface ) {
             $this->logger->error(
-                'Unable to enqueue. The queue is not of type: ' . StorageInterface::class . '.',
+                'Unable to enqueue. The queue is not of type: ' . QueueInterface::class . '.',
                 [ __CLASS__ ]
             );
             return false;

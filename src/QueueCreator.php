@@ -5,9 +5,9 @@
 
 namespace Geniem\Queue;
 
-use Geniem\Queue\Interfaces\StorageInterface;
-use Geniem\Queue\Interfaces\EntryFetcherInterface;
-use Geniem\Queue\Interfaces\EntryHandlerInterface;
+use Geniem\Queue\Interfaces\QueueInterface;
+use Geniem\Queue\Interfaces\FetchableInterface;
+use Geniem\Queue\Interfaces\HandleableInterface;
 
 /**
  * Queue creation logic.
@@ -17,30 +17,16 @@ class QueueCreator {
     /**
      * The queue instance.
      *
-     * @var StorageInterface
+     * @var QueueInterface
      */
     protected $queue;
 
     /**
-     * The fetcher instance.
-     *
-     * @var EntryFetcherInterface
-     */
-    protected $fetcher;
-
-    /**
-     * The handler instance.
-     *
-     * @var EntryHandlerInterface
-     */
-    protected $handler;
-
-    /**
      * QueueCreator constructor.
      *
-     * @param StorageInterface $queue The queue instance.
+     * @param QueueInterface $queue The queue instance.
      */
-    public function __construct( StorageInterface $queue ) {
+    public function __construct( QueueInterface $queue ) {
         $this->queue = $queue;
     }
 
@@ -48,17 +34,26 @@ class QueueCreator {
      * Fetches the queue entries and saves it.
      */
     public function create() {
-        // Run hooks before the entries are fetched.
-        do_action( 'wpq_before_fetch', $this->queue );
-        do_action( 'wpq_before_fetch_' . $this->queue->get_name(), $this->queue );
+        $fetcher = $this->queue->get_entry_fetcher();
 
-        $entries = $this->queue->get_entry_fetcher()->fetch();
+        if ( $fetcher instanceof FetchableInterface ) {
+            // Run hooks before the entries are fetched.
+            do_action( 'wpq_before_fetch', $this->queue );
+            do_action( 'wpq_before_fetch_' . $this->queue->get_name(), $this->queue );
 
-        // Run hooks after the entries are fetched.
-        do_action( 'wpq_after_fetch', $this->queue, $entries );
-        do_action( 'wpq_after_fetch_' . $this->queue->get_name(), $this->queue, $entries );
+            $entries = $this->queue->get_entry_fetcher()->fetch();
 
-        $this->queue->set_entries( $entries );
+            // Run hooks after the entries are fetched.
+            do_action( 'wpq_after_fetch', $this->queue, $entries );
+            do_action( 'wpq_after_fetch_' . $this->queue->get_name(), $this->queue, $entries );
+
+            $this->queue->set_entries( $entries );
+        }
+
+        // Run hooks before the queue is saved.
+        do_action( 'wpq_before_save', $this->queue );
+        do_action( 'wpq_before_save_' . $this->queue->get_name(), $this->queue );
+
         $this->queue->save();
 
         // Run hooks after the queue is saved.

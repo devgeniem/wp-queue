@@ -4,30 +4,37 @@
  * This class groups basic method implementations.
  */
 
-namespace Geniem\Queue\Storage;
+namespace Geniem\Queue\Instance;
 
 use Psr\Log\LoggerInterface;
 use Geniem\Queue\Interfaces\EntryInterface;
-use Geniem\Queue\Interfaces\EntryFetcherInterface;
-use Geniem\Queue\Interfaces\EntryHandlerInterface;
-use Geniem\Queue\Interfaces\StorageInterface;
+use Geniem\Queue\Interfaces\FetchableInterface;
+use Geniem\Queue\Interfaces\HandleableInterface;
+use Geniem\Queue\Interfaces\QueueInterface;
 
 /**
  * Base class for queues.
  */
-abstract class Base implements StorageInterface {
+abstract class Base implements QueueInterface {
+
+    /**
+     * The unique name.
+     *
+     * @var string
+     */
+    protected $name;
 
     /**
      * The entry fetcher instance.
      *
-     * @var EntryFetcherInterface|null
+     * @var FetchableInterface|null
      */
     protected $entry_fetcher;
 
     /**
      * The entry handler instance.
      *
-     * @var EntryHanderInterface|null
+     * @var HandleableInterface|null
      */
     protected $entry_handler;
 
@@ -57,18 +64,18 @@ abstract class Base implements StorageInterface {
     /**
      * Get the entry handler.
      *
-     * @return EntryHandlerInterface|null
+     * @return HandleableInterface|null
      */
-    public function get_entry_handler() : ?EntryHandlerInterface {
+    public function get_entry_handler() : ?HandleableInterface {
         return $this->entry_handler;
     }
 
     /**
      * Get the entry fetcher.
      *
-     * @return EntryFetcherInterface|null
+     * @return FetchableInterface|null
      */
-    public function get_entry_fetcher() : ?EntryFetcherInterface {
+    public function get_entry_fetcher() : ?FetchableInterface {
         return $this->entry_fetcher;
     }
 
@@ -93,9 +100,9 @@ abstract class Base implements StorageInterface {
     /**
      * Set the entry handler.
      *
-     * @param EntryHandlerInterface $entry_handler The callable to handle the single entry.
+     * @param HandleableInterface $entry_handler The callable to handle the single entry.
      */
-    public function set_entry_handler( ?EntryHandlerInterface $entry_handler ) {
+    public function set_entry_handler( ?HandleableInterface $entry_handler ) {
         $this->entry_handler = $entry_handler;
 
         return $this;
@@ -104,9 +111,9 @@ abstract class Base implements StorageInterface {
     /**
      * Set the entry fetcher.
      *
-     * @param EntryFetcherInterface $entry_fetcher The callable to handle the single entry.
+     * @param FetchableInterface $entry_fetcher The callable to handle the single entry.
      */
-    public function set_entry_fetcher( ?EntryFetcherInterface $entry_fetcher ) {
+    public function set_entry_fetcher( ?FetchableInterface $entry_fetcher ) {
         $this->entry_fetcher = $entry_fetcher;
 
         return $this;

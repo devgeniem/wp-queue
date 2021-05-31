@@ -1,6 +1,6 @@
 <?php
 /**
- * Defines the import controller queue interface.
+ * Defines functionalities for queue instances.
  */
 
 namespace Geniem\Queue\Interfaces;
@@ -8,18 +8,20 @@ namespace Geniem\Queue\Interfaces;
 use Psr\Log\LoggerInterface;
 
 /**
- * Use this interface to customize the queue logic.
+ * Interface QueueInterface
+ *
+ * @package Geniem\Queue\Interfaces
  */
-interface StorageInterface {
+interface QueueInterface {
 
     /**
      * Queue constructor.
      *
-     * @param string                $name    A unique name for the queue.
-     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
-     * @param EntryHandlerInterface $handler The entry handler instance.
+     * @param string              $name    A unique name for the queue.
+     * @param FetchableInterface  $fetcher The entry fetcher instance.
+     * @param HandleableInterface $handler The entry handler instance.
      */
-    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler );
+    public function __construct( string $name, FetchableInterface $fetcher, HandleableInterface $handler );
 
     /**
      * Getter for the queue name.
@@ -31,16 +33,16 @@ interface StorageInterface {
     /**
      * Getter for the entry handler.
      *
-     * @return EntryHandlerInterface|null
+     * @return HandleableInterface|null
      */
-    public function get_entry_handler() : ?EntryHandlerInterface;
+    public function get_entry_handler() : ?HandleableInterface;
 
     /**
      * Getter for the entry fetcher.
      *
-     * @return EntryFetcherInterface|null
+     * @return FetchableInterface|null
      */
-    public function get_entry_fetcher() : ?EntryFetcherInterface;
+    public function get_entry_fetcher() : ?FetchableInterface;
 
     /**
      * Getter for the entries.
@@ -66,16 +68,16 @@ interface StorageInterface {
     /**
      * Setter for the entry handler.
      *
-     * @param EntryHandlerInterface $handler The entry handler.
+     * @param HandleableInterface $handler The entry handler.
      */
-    public function set_entry_handler( EntryHandlerInterface $handler );
+    public function set_entry_handler( HandleableInterface $handler );
 
     /**
      * Setter for the entry fetcher.
      *
-     * @param EntryFetcherInterface $fetcher The entry handler.
+     * @param FetchableInterface $fetcher The entry handler.
      */
-    public function set_entry_fetcher( EntryFetcherInterface $fetcher );
+    public function set_entry_fetcher( FetchableInterface $fetcher );
 
     /**
      * Setter for the logger.

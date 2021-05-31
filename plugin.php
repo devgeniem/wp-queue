@@ -30,4 +30,4 @@ $plugin_path = __DIR__;
 QueuePlugin::init( $plugin_version, $plugin_path );
 
 // Require global functions.
-require_once __DIR__ . '/src/api.php';
+require_once __DIR__ . '/src/functions.php';

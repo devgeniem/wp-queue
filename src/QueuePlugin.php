@@ -6,7 +6,10 @@
 namespace Geniem\Queue;
 
 use Geniem\Queue\CLI\Commands;
+use Geniem\Queue\Exception\QueueContainerException;
 use Geniem\Queue\Queue\RedisCache;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class QueuePlugin
@@ -30,15 +33,6 @@ final class QueuePlugin {
     protected $version = '';
 
     /**
-     * Get the instance.
-     *
-     * @return QueuePlugin
-     */
-    public static function get_instance() : QueuePlugin {
-        return self::$instance;
-    }
-
-    /**
      * The plugin directory path.
      *
      * @var string
@@ -51,6 +45,20 @@ final class QueuePlugin {
      * @var string
      */
     protected $plugin_uri = '';
+
+    /**
+     * Holds the queue container.
+     *
+     * @var ContainerInterface
+     */
+    protected $queue_container;
+
+    /**
+     * The plugin logger.
+     *
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * Get the version.
@@ -80,6 +88,50 @@ final class QueuePlugin {
     }
 
     /**
+     * Get the queue_container.
+     *
+     * @return ContainerInterface
+     */
+    public function get_queue_container() : ContainerInterface {
+        return $this->queue_container;
+    }
+
+    /**
+     * Use this method to override the default queue container instance.
+     *
+     * @param ContainerInterface $queue_container The queue container instance.
+     *
+     * @return QueuePlugin Return self to enable chaining.
+     */
+    public function set_queue_container( ContainerInterface $queue_container ) : QueuePlugin {
+        $this->queue_container = $queue_container;
+
+        return $this;
+    }
+
+    /**
+     * Get the logger.
+     *
+     * @return LoggerInterface
+     */
+    public function get_logger() : LoggerInterface {
+        return $this->logger;
+    }
+
+    /**
+     * Set the logger.
+     *
+     * @param LoggerInterface $logger The logger.
+     *
+     * @return QueuePlugin Return self to enable chaining.
+     */
+    public function set_logger( ?LoggerInterface $logger ) : QueuePlugin {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
      * Initialize the plugin by creating the singleton.
      *
      * @param string $version     The current plugin version.
@@ -88,6 +140,7 @@ final class QueuePlugin {
     public static function init( $version, $plugin_path ) {
         if ( empty( static::$instance ) ) {
             static::$instance = new self( $version, $plugin_path );
+            static::$instance->init_container();
             static::$instance->init_cli();
             static::$instance->hooks();
         }
@@ -98,7 +151,7 @@ final class QueuePlugin {
      *
      * @return QueuePlugin
      */
-    public static function plugin() {
+    public static function plugin() : QueuePlugin {
         return static::$instance;
     }
 
@@ -118,7 +171,10 @@ final class QueuePlugin {
      * Add plugin hooks and filters.
      */
     protected function hooks() {
-        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
+        // Queue plugin ready.
+        do_action( 'wpq_init', $this );
+        // The hook for adding queue instances.
+        do_action( 'wpq_add_queue', $this->queue_container );
     }
 
     /**
@@ -129,8 +185,31 @@ final class QueuePlugin {
     protected function init_cli() {
         // Register the CLI commands if WP CLI is available.
         if ( defined( 'WP_CLI' ) && WP_CLI ) {
-            \WP_CLI::add_command( 'queue', Commands::class );
+            \WP_CLI::add_command( 'queue', Commands::class, [ $this->queue_container ] );
         }
+    }
+
+    /**
+     * Sets the default queue container.
+     *
+     * @throws QueueContainerException
+     */
+    protected function init_container() {
+        $queue_container = apply_filters( 'wpq_queue_container', new QueueContainer() );
+
+        if ( ! $queue_container instanceof ContainerInterface ) {
+            $interface = ContainerInterface::class;
+            throw new QueueContainerException( "The queue container must implement the $interface interface." );
+        }
+
+        $this->queue_container = $queue_container;
+    }
+
+    /**
+     * Initializes the logger through a filter.
+     */
+    protected function init_logger() {
+        $this->logger = apply_filters( 'wpq_logger', new Logger() );
     }
 
     /**

@@ -6,4 +6,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## [Unreleased]
 
 ### Added
-- feature/entry-exists: Method for checking if entry exists in queue added to RedisCache.
+- feature/entry-exists: Method for checking if entry exists in queue added to RedisQueue.
