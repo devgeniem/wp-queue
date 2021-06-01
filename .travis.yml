@@ -5,8 +5,10 @@ sudo: false
 language: php
 
 notifications:
-  on_success: never
-  on_failure: change
+  slack:
+    if: (branch = master) OR (branch =~ /^(release).*$/)
+    on_success: always
+    on_failure: always
 
 php:
   - nightly
@@ -17,8 +19,13 @@ matrix:
   allow_failures:
     - php: nightly
 
-before_script:
-  - composer install --prefer-source --no-interaction --dev
+install:
+  - rm composer.lock
+  - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
 
 script:
   - phpunit
+
+cache:
+  directories:
+    - $HOME/.composer/cache

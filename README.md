@@ -1,5 +1,7 @@
 # WordPress Queue
 
+[![Build Status](https://travis-ci.org/devgeniem/devgeniem/wp-queue.svg?branch=master)](https://travis-ci.org/devgeniem/devgeniem/wp-queue) [![Latest Stable Version](https://poser.pugx.org/devgeniem/devgeniem/wp-queue/v/stable)](https://packagist.org/packages/devgeniem/devgeniem/wp-queue) [![License](https://poser.pugx.org/devgeniem/devgeniem/wp-queue/license)](https://packagist.org/packages/devgeniem/devgeniem/wp-queue)
+
 WordPress Queue is a modular library for managing queued tasks in WordPress.
 
 ## Installation
