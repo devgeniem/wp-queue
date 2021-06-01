@@ -17,7 +17,7 @@ composer require devgeniem/wp-queue
 
 A queue consists of its name, an entry handler and some entries. Entries are statically typed objects holding the data. An entry handler is the controller called when dequeueing a single entry. The name is used to identify the queue, for instance, with WP-CLI.
 
-Queue functionalities are defined with the `\Geniem\Queue\Interfaces\QueueInterface` interface. You can create your own queue controller by implementing this interface. We provide an abstract class, `Geniem\Queue\Storage\Base`, that you can extend as a starting point.
+Queue functionalities are defined with the `\Geniem\Queue\Interfaces\QueueInterface` interface. You can create your own queue controller by implementing this interface. We provide an abstract class, `Geniem\Queue\Instance\Base`, that you can extend as a starting point.
 
 ### Queue creation
 
