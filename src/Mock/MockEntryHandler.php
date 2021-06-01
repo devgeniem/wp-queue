@@ -22,6 +22,6 @@ class MockEntryHandler implements HandleableInterface {
      * @param EntryInterface $entry The entry.
      */
     public function handle( EntryInterface $entry ) {
-        ( new Logger() )->info( 'Handling an entry.', [ 'entry' => $entry ] );
+        wpq()->get_logger()->info( 'Handling an entry.', [ 'entry' => $entry ] );
     }
 }

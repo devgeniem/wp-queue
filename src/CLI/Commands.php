@@ -285,7 +285,7 @@ class Commands {
         }
 
         try {
-            $enqueuer->enqueue( $queue );
+            $enqueuer->fetch( $queue );
             WP_CLI::success( "Entries for queue \"$queue_name\" were enqueued successfully!" );
             return true;
         }

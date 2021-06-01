@@ -13,17 +13,12 @@ php:
   - 7.4
   - 7.3
 
-env:
-  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0
-
 matrix:
   allow_failures:
     - php: nightly
 
 before_script:
-
-  - bash tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
+  - composer install --prefer-source --no-interaction --dev
 
 script:
-  - php -l plugin.php
   - phpunit

@@ -24,3 +24,5 @@ vendor/
 *.log
 *.sql
 *.sqlite
+
+.phpunit.result.cache

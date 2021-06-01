@@ -25,7 +25,11 @@
     },
     "require-dev": {
         "devgeniem/geniem-rules-codesniffer": "dev-master",
-        "brainmaestro/composer-git-hooks": "dev-master"
+        "brainmaestro/composer-git-hooks": "dev-master",
+        "phpunit/phpunit": "^9",
+        "10up/wp_mock": "dev-master",
+        "m6web/redis-mock": "dev-master",
+        "predis/predis": "2.0.x-dev"
     },
     "scripts": {
         "lint": "vendor/bin/phpcs --standard=Geniem plugin.php src/",

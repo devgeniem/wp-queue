@@ -5,8 +5,8 @@
 
 namespace Geniem\Queue;
 
-use Geniem\Queue\Interfaces\EntryInterface;
 use Psr\Log\LoggerInterface;
+use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\QueueInterface;
 
 /**
@@ -30,7 +30,7 @@ class Enqueuer {
      *                                     If no logger is passed, dequeuer uses the plugin default.
      */
     public function __construct( ?LoggerInterface $logger = null ) {
-        $this->logger = $logger ?? new Logger();
+        $this->logger = $logger ?? wpq()->get_logger();
     }
 
     /**
@@ -40,15 +40,7 @@ class Enqueuer {
      *
      * @return int Number of entries enqueued. Negative integer on error.
      */
-    public function enqueue( QueueInterface $queue ) : int {
-        if ( ! $queue instanceof QueueInterface ) {
-            $this->logger->error(
-                'Unable to enqueue. The queue is not of type: ' . QueueInterface::class . '.',
-                [ __CLASS__ ]
-            );
-            return false;
-        }
-
+    public function fetch( QueueInterface $queue ) : int {
         $name = $queue->get_name();
 
         if ( ! $queue->exists() ) {
@@ -71,17 +63,31 @@ class Enqueuer {
 
             // Add entries to the queue.
             if ( ! empty( $entries ) ) {
+                // Wrap data into entries if not already wrapped.
+                $wrapped_entries = array_map(
+                    function( $item ) {
+                        if ( $item instanceof Entry ) {
+                            return $item;
+                        }
+                        $entry = new Entry();
+                        $entry->set_data( $item );
+                        return $entry;
+                    },
+                    $entries
+                );
+
+                // Enqueue entries.
                 array_walk(
-                    $entries,
+                    $wrapped_entries,
                     function( EntryInterface $entry ) use ( $queue ) {
-                        $queue->enqueue( $entry );
+                        $this->enqueue( $queue, $entry );
                     }
                 );
             }
 
-            // Run hooks after the entries are added to the queue.
-            do_action( 'wpq_after_enqueue', $queue, $entries );
-            do_action( 'wpq_after_enqueue_' . $name, $queue, $entries );
+            // Run hooks after the entries are the process is completed.
+            do_action( 'wpq_after_fetch_complete', $queue, $entries );
+            do_action( 'wpq_after_fetch_complete_' . $name, $queue, $entries );
 
             return count( $entries );
         }
@@ -98,6 +104,54 @@ class Enqueuer {
             }
 
             return -1;
+        }
+    }
+
+    /**
+     * Enqueue a single entry into a queue.
+     *
+     * @param QueueInterface $queue The queue name.
+     * @param EntryInterface $entry The entry.
+     *
+     * @return bool True on success, false on failure.
+     */
+    public function enqueue( QueueInterface $queue, EntryInterface $entry ) : bool {
+        $name = $queue->get_name();
+
+        if ( ! $queue->exists() ) {
+            $this->logger->error( "Unable to find the queue: $name.", [ __CLASS__ ] );
+            return false;
+        }
+
+        // Fetch new entries.
+        try {
+            // Run hooks before the entries are fetched.
+            do_action( 'wpq_before_enqueue', $queue, $entry );
+            do_action( 'wpq_before_enqueue_' . $name, $queue, $entry );
+
+            $queue->enqueue( $entry );
+
+            // Run hooks after the entries are added to the queue.
+            do_action( 'wpq_after_enqueue', $queue, $entry );
+            do_action( 'wpq_after_enqueue_' . $name, $queue, $entry );
+
+            return true;
+        }
+        catch ( \Exception $error ) {
+            if ( $this->logger ) {
+                $this->logger->error(
+                    "An error occurred while enqueueing an entry to queue: $name.",
+                    [
+                        // Use this filter to sanitize sensitive data.
+                        'data'    => apply_filters( 'wpq_entry_data_log', $entry->get_data() ),
+                        'message' => $error->getMessage(),
+                        'file'    => $error->getFile(),
+                        'line'    => $error->getLine(),
+                    ]
+                );
+            }
+
+            return false;
         }
     }
 }

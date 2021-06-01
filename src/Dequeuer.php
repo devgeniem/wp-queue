@@ -29,7 +29,7 @@ class Dequeuer {
      *                                     If no logger is passed, dequeuer uses the plugin default.
      */
     public function __construct( ?LoggerInterface $logger = null ) {
-        $this->logger = $logger ?? new Logger();
+        $this->logger = $logger ?? wpq()->get_logger();
     }
 
     /**

@@ -54,7 +54,7 @@ class RedisQueue extends Base {
     /**
      * Queues will be stored through the Redis instance.
      *
-     * @var Redis
+     * @var \Redis
      */
     protected $redis;
 
@@ -89,14 +89,18 @@ class RedisQueue extends Base {
     /**
      * A safe method for accessing the Redis instance in Redis Object Cache.
      *
-     * @return mixed|null
+     * @return \Redis|null
      */
     private function get_redis_instance() {
         global $wp_object_cache;
+
+        $redis = null;
+
         if ( method_exists( $wp_object_cache, 'redis_instance' ) ) {
-            return $wp_object_cache->redis_instance();
+            $redis = $wp_object_cache->redis_instance();
         }
-        return null;
+
+        return apply_filters( 'wpq_redis_instance', $redis );
     }
 
     /**
