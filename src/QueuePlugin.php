@@ -110,12 +110,12 @@ final class QueuePlugin {
     }
 
     /**
-     * Get the logger.
+     * Get the logger. If none is set use the default logger.
      *
      * @return LoggerInterface
      */
     public function get_logger() : LoggerInterface {
-        return $this->logger;
+        return $this->logger ?? new Logger();
     }
 
     /**

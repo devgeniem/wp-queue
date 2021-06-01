@@ -6,6 +6,7 @@
 namespace Geniem\Queue;
 
 use Psr\Log\LoggerInterface;
+use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\QueueInterface;
 
 /**
@@ -37,22 +38,22 @@ class Dequeuer {
      *
      * @param QueueInterface $queue The queue name.
      *
-     * @return bool True for success, false on failure.
+     * @return EntryInterface|null The dequeued entry or null.
      */
-    public function dequeue( QueueInterface $queue ) {
+    public function dequeue( QueueInterface $queue ) : ?EntryInterface {
         if ( ! $queue instanceof QueueInterface ) {
             $this->logger->error(
                 'Unable to dequeue. The queue is not of type: ' . QueueInterface::class . '.',
                 [ __CLASS__ ]
             );
-            return false;
+            return null;
         }
 
         $name = $queue->get_name();
 
         if ( ! $queue->exists() ) {
             $this->logger->error( "Unable to find the queue: $name.", [ __CLASS__ ] );
-            return false;
+            return null;
         }
 
         // Run the first entry.
@@ -61,13 +62,13 @@ class Dequeuer {
             do_action( 'wpq_before_dequeue', $queue );
             do_action( 'wpq_before_dequeue_' . $name, $queue );
 
-            $queue->dequeue();
+            $entry = $queue->dequeue();
 
             // Run hooks after the dequeue is done.
-            do_action( 'wpq_after_dequeue', $queue );
-            do_action( 'wpq_after_dequeue_' . $name, $queue );
+            do_action( 'wpq_after_dequeue', $queue, $entry );
+            do_action( 'wpq_after_dequeue_' . $name, $queue, $entry );
 
-            return true;
+            return $entry;
         }
         catch ( \Exception $error ) {
             if ( $this->logger ) {
@@ -81,7 +82,7 @@ class Dequeuer {
                 );
             }
 
-            return false;
+            return null;
         }
     }
 }

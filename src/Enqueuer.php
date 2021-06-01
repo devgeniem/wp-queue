@@ -64,17 +64,7 @@ class Enqueuer {
             // Add entries to the queue.
             if ( ! empty( $entries ) ) {
                 // Wrap data into entries if not already wrapped.
-                $wrapped_entries = array_map(
-                    function( $item ) {
-                        if ( $item instanceof Entry ) {
-                            return $item;
-                        }
-                        $entry = new Entry();
-                        $entry->set_data( $item );
-                        return $entry;
-                    },
-                    $entries
-                );
+                $wrapped_entries = wpq_wrap_items_to_entries( $entries );
 
                 // Enqueue entries.
                 array_walk(

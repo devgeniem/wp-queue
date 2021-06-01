@@ -21,14 +21,9 @@ use Redis;
 class RedisQueue extends Base {
 
     /**
-     * This hook name is used to add a WP Cron event for a queue.
-     */
-    const QUEUE_CRON_HOOK = 'geniem_import_queue';
-
-    /**
      * The option name prefix.
      */
-    const QUEUE_PREFIX = 'geniem_import_queue_';
+    const QUEUE_PREFIX = 'wpq_';
 
     /**
      * Defines if the queue exists in Redis or not.
@@ -299,12 +294,13 @@ class RedisQueue extends Base {
     /**
      * Run an event from the queue and store the rest.
      *
-     * @return mixed Returns the popped entry or null on failure.
+     * @return EntryInterface|null The dequeued entry or null.
      * @throws Exception An exception is thrown if the entry handler is not a callable.
      */
-    public function dequeue() {
+    public function dequeue() : ?EntryInterface {
         $this->logger->info( 'RedisCacheQueue - Dequeueing event from queue: ' . $this->name );
 
+        $lock_ttl = apply_filters( 'wpq_cache_lock_ttl', 5 * MINUTE_IN_SECONDS );
         $lock_key = $this->get_lock_key();
         $lock_set = false;
 
@@ -312,7 +308,7 @@ class RedisQueue extends Base {
             // Nothing to do if the queue is empty.
             if ( $this->is_empty() ) {
                 $this->logger->info( 'RedisCacheQueue - Nothing to dequeue. The queue is empty.', [ $this->name ] );
-                return;
+                return null;
             }
 
             $this->load_entry_handler();
@@ -331,11 +327,10 @@ class RedisQueue extends Base {
                     [ $this->name ]
                 );
 
-                return;
+                return null;
             }
             else {
                 // Do not lock for eternity.
-                $lock_ttl = apply_filters( 'wordpress_queue_redis_cache_lock_ttl', 5 * MINUTE_IN_SECONDS );
                 $this->redis->expire( $lock_key, $lock_ttl );
             }
 
@@ -374,7 +369,7 @@ class RedisQueue extends Base {
             }
             catch ( Exception $e ) {
                 $this->logger->error(
-                    'RedisCacheQueue - An error occurred while deleting the lock.',
+                    "RedisCacheQueue - An error occurred while deleting the lock. The queue will remain locked.",
                     [
                         'name'    => $this->name,
                         'message' => $e->getMessage(),
@@ -386,6 +381,8 @@ class RedisQueue extends Base {
                 $entry = null;
             }
         }
+
+        return $entry ?? null;
     }
 
     /**

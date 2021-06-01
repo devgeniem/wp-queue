@@ -1,21 +1,22 @@
 <?php
 /**
- * A simple queue for testing purposes.
+ * A mock queue for testing purposes.
  */
 
-namespace Geniem\Queue\Instance;
+namespace Geniem\Queue\Mock;
 
+use Geniem\Queue\Instance\Base;
 use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\FetchableInterface;
 use Geniem\Queue\Interfaces\HandleableInterface;
 use Geniem\Queue\Logger;
 
 /**
- * Class SimpleQueue
+ * Class MockQueue
  *
  * @package Geniem\Queue\Instance
  */
-class SimpleQueue extends Base implements \Geniem\Queue\Interfaces\QueueInterface {
+class MockQueue extends Base {
 
     /**
      * The simple entry queue.
@@ -23,6 +24,17 @@ class SimpleQueue extends Base implements \Geniem\Queue\Interfaces\QueueInterfac
      * @var EntryInterface[]
      */
     protected $queue = [];
+
+    /**
+     * A checker for save state.
+     *
+     * @var bool
+     */
+    protected $is_saved = false;
+
+    public function is_saved() : bool {
+        return $this->is_saved;
+    }
 
     /**
      * Queue constructor.
@@ -69,10 +81,12 @@ class SimpleQueue extends Base implements \Geniem\Queue\Interfaces\QueueInterfac
 
     /**
      * Pop the first element out of the queue.
+     *
+     * @return EntryInterface|null The dequeued entry or null.
      */
-    public function dequeue() {
+    public function dequeue(): ?EntryInterface {
         if ( empty( $this->queue ) ) {
-            return;
+            return null;
         }
 
         $entry = $this->queue[0];
@@ -84,7 +98,11 @@ class SimpleQueue extends Base implements \Geniem\Queue\Interfaces\QueueInterfac
 
             // Reset indexes.
             $this->queue = array_values( $this->queue );
+
+            return $entry;
         }
+
+        return null;
     }
 
     /**
@@ -97,10 +115,21 @@ class SimpleQueue extends Base implements \Geniem\Queue\Interfaces\QueueInterfac
     }
 
     /**
+     * Set the queue from the passed entries.
+     *
+     * @param array|EntryInterface[]|null $entries The entries/items.
+     */
+    public function set_entries( $entries ) {
+        parent::set_entries( $entries );
+
+        $this->queue = $this->entries;
+    }
+
+    /**
      * No saving required for this simple queue.
      */
     public function save() {
-        // Nothing to do for a simple queue.
+        $this->is_saved = true;
     }
 
     /**

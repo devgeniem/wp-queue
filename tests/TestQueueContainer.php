@@ -3,7 +3,7 @@
  * Tests for the queue container functionalities.
  */
 
-use Geniem\Queue\Instance\SimpleQueue;
+use Geniem\Queue\Mock\MockQueue;
 use Geniem\Queue\Mock\MockEntryFetcher;
 use Geniem\Queue\Mock\MockEntryHandler;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ class QueueContainerTest extends TestCase {
         $plugin = wpq();
         $container = $plugin->get_queue_container();
 
-        $queue = new SimpleQueue(
+        $queue = new MockQueue(
             'test1',
             new MockEntryFetcher( [] ),
             new MockEntryHandler()
@@ -38,7 +38,7 @@ class QueueContainerTest extends TestCase {
         $plugin = wpq();
         $container = $plugin->get_queue_container();
 
-        $queue = new SimpleQueue(
+        $queue = new MockQueue(
             'test2',
             new MockEntryFetcher( [] ),
             new MockEntryHandler()
@@ -46,7 +46,7 @@ class QueueContainerTest extends TestCase {
 
         $container->add( $queue );
 
-        $with_same_name = new SimpleQueue(
+        $with_same_name = new MockQueue(
             'test2',
             new MockEntryFetcher( [] ),
             new MockEntryHandler()
@@ -66,7 +66,7 @@ class QueueContainerTest extends TestCase {
         $plugin = wpq();
         $container = $plugin->get_queue_container();
 
-        $first_queue = new SimpleQueue(
+        $first_queue = new MockQueue(
             'test3',
             new MockEntryFetcher( [ 1, 2, 3 ] ),
             new MockEntryHandler()
@@ -74,7 +74,7 @@ class QueueContainerTest extends TestCase {
 
         $container->add( $first_queue );
 
-        $second_queue = new SimpleQueue(
+        $second_queue = new MockQueue(
             'test4',
             new MockEntryFetcher( [ 4, 5, 6 ] ),
             new MockEntryHandler()
@@ -97,7 +97,7 @@ class QueueContainerTest extends TestCase {
         $plugin = wpq();
         $container = $plugin->get_queue_container();
 
-        $replacable = new SimpleQueue(
+        $replacable = new MockQueue(
             'replacable',
             new MockEntryFetcher( [ 1, 2, 3 ] ),
             new MockEntryHandler()
@@ -105,7 +105,7 @@ class QueueContainerTest extends TestCase {
 
         $container->add( $replacable );
 
-        $replace_with = new SimpleQueue(
+        $replace_with = new MockQueue(
             'replacable',
             new MockEntryFetcher( [ 4, 5, 6 ] ),
             new MockEntryHandler()

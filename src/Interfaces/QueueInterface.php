@@ -60,6 +60,9 @@ interface QueueInterface {
 
     /**
      * Setter for the entries.
+     * The intended functionality is to replace all queue
+     * entries when this method is called. Afterwards,
+     * the save function should save the final state of the queue.
      *
      * @param EntryInterface[] $entries The queue entries.
      */
@@ -110,9 +113,9 @@ interface QueueInterface {
     /**
      * Runs an entry from the queue and removes it from the queue.
      *
-     * @return void
+     * @return EntryInterface|null The dequeued entry or null.
      */
-    public function dequeue();
+    public function dequeue() : ?EntryInterface;
 
     /**
      * Adds an entry at the end of the queue.

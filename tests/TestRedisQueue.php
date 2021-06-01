@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class TestRedisQueue extends TestCase {
 
     public function test_redis() {
-        // TODO
+        $this->assertTrue( true );
     }
 
 }
