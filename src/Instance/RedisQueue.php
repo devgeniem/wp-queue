@@ -6,10 +6,10 @@
 namespace Geniem\Queue\Instance;
 
 use Exception;
-use Geniem\Queue\Interfaces\FetchableInterface;
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
 use Geniem\Queue\Logger;
 use Psr\Log\LoggerInterface;
-use Geniem\Queue\Interfaces\HandleableInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 use Geniem\Queue\Interfaces\EntryInterface;
 use Redis;
 
@@ -67,11 +67,11 @@ class RedisQueue extends Base {
     /**
      * Queue constructor.
      *
-     * @param string              $name    A unique name for the queue.
-     * @param FetchableInterface  $fetcher The entry fetcher instance.
-     * @param HandleableInterface $handler The entry handler instance.
+     * @param string                $name    A unique name for the queue.
+     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
+     * @param EntryHandlerInterface $handler The entry handler instance.
      */
-    public function __construct( string $name, FetchableInterface $fetcher, HandleableInterface $handler ) {
+    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler ) {
         $this->name          = $name;
         $this->entry_fetcher = $fetcher;
         $this->entry_handler = $handler;
@@ -314,7 +314,7 @@ class RedisQueue extends Base {
             $this->load_entry_handler();
 
             // Do nothing if the handler is not the correct type.
-            if ( ! $this->entry_handler instanceof HandleableInterface ) {
+            if ( ! $this->entry_handler instanceof EntryHandlerInterface ) {
                 throw new Exception( 'RedisCacheQueue - The entry handler is the wrong type.' );
             }
 

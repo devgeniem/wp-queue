@@ -17,11 +17,11 @@ interface QueueInterface {
     /**
      * Queue constructor.
      *
-     * @param string              $name    A unique name for the queue.
-     * @param FetchableInterface  $fetcher The entry fetcher instance.
-     * @param HandleableInterface $handler The entry handler instance.
+     * @param string                $name    A unique name for the queue.
+     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
+     * @param EntryHandlerInterface $handler The entry handler instance.
      */
-    public function __construct( string $name, FetchableInterface $fetcher, HandleableInterface $handler );
+    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler );
 
     /**
      * Getter for the queue name.
@@ -33,16 +33,16 @@ interface QueueInterface {
     /**
      * Getter for the entry handler.
      *
-     * @return HandleableInterface|null
+     * @return EntryHandlerInterface|null
      */
-    public function get_entry_handler() : ?HandleableInterface;
+    public function get_entry_handler() : ?EntryHandlerInterface;
 
     /**
      * Getter for the entry fetcher.
      *
-     * @return FetchableInterface|null
+     * @return EntryFetcherInterface|null
      */
-    public function get_entry_fetcher() : ?FetchableInterface;
+    public function get_entry_fetcher() : ?EntryFetcherInterface;
 
     /**
      * Getter for the entries.
@@ -71,16 +71,16 @@ interface QueueInterface {
     /**
      * Setter for the entry handler.
      *
-     * @param HandleableInterface $handler The entry handler.
+     * @param EntryHandlerInterface $handler The entry handler.
      */
-    public function set_entry_handler( HandleableInterface $handler );
+    public function set_entry_handler( EntryHandlerInterface $handler );
 
     /**
      * Setter for the entry fetcher.
      *
-     * @param FetchableInterface $fetcher The entry handler.
+     * @param EntryFetcherInterface $fetcher The entry handler.
      */
-    public function set_entry_fetcher( FetchableInterface $fetcher );
+    public function set_entry_fetcher( EntryFetcherInterface $fetcher );
 
     /**
      * Setter for the logger.
@@ -121,6 +121,7 @@ interface QueueInterface {
      * Adds an entry at the end of the queue.
      *
      * @param EntryInterface $entry An entry instance.
+     *
      * @return void
      */
     public function enqueue( EntryInterface $entry );

@@ -6,8 +6,8 @@
 namespace Geniem\Queue;
 
 use Geniem\Queue\Interfaces\QueueInterface;
-use Geniem\Queue\Interfaces\FetchableInterface;
-use Geniem\Queue\Interfaces\HandleableInterface;
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 
 /**
  * Queue creation logic.
@@ -36,7 +36,7 @@ class QueueCreator {
     public function create() {
         $fetcher = $this->queue->get_entry_fetcher();
 
-        if ( $fetcher instanceof FetchableInterface ) {
+        if ( $fetcher instanceof EntryFetcherInterface ) {
             // Run hooks before the entries are fetched.
             do_action( 'wpq_before_fetch', $this->queue );
             do_action( 'wpq_before_fetch_' . $this->queue->get_name(), $this->queue );

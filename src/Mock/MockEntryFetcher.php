@@ -12,7 +12,7 @@ use Geniem\Queue\Entry;
  *
  * @package Geniem\Queue\Mock
  */
-class MockEntryFetcher implements \Geniem\Queue\Interfaces\FetchableInterface {
+class MockEntryFetcher implements \Geniem\Queue\Interfaces\EntryFetcherInterface {
 
     /**
      * The mock data.

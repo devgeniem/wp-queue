@@ -6,7 +6,7 @@
 namespace Geniem\Queue\Mock;
 
 use Geniem\Queue\Interfaces\EntryInterface;
-use Geniem\Queue\Interfaces\HandleableInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 use Geniem\Queue\Logger;
 
 /**
@@ -14,7 +14,7 @@ use Geniem\Queue\Logger;
  *
  * @package Geniem\Queue\Mock
  */
-class MockEntryHandler implements HandleableInterface {
+class MockEntryHandler implements EntryHandlerInterface {
 
     /**
      * Handle the entry by just logging the data.

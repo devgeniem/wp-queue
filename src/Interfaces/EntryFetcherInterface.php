@@ -8,9 +8,11 @@ namespace Geniem\Queue\Interfaces;
 use Geniem\Queue\Entry;
 
 /**
- * Use this interface to define an entry fetcher.
+ * Interface EntryFetcherInterface
+ *
+ * @package Geniem\Queue\Interfaces
  */
-interface FetchableInterface {
+interface EntryFetcherInterface {
 
     /**
      * The method must return an array of entries or null.

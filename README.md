@@ -1,6 +1,8 @@
+![geniem-github-banner](https://cloud.githubusercontent.com/assets/5691777/14319886/9ae46166-fc1b-11e5-9630-d60aa3dc4f9e.png)
+
 # WordPress Queue
 
-[![Build Status](https://travis-ci.org/devgeniem/devgeniem/wp-queue.svg?branch=master)](https://travis-ci.org/devgeniem/devgeniem/wp-queue) [![Latest Stable Version](https://poser.pugx.org/devgeniem/devgeniem/wp-queue/v/stable)](https://packagist.org/packages/devgeniem/devgeniem/wp-queue) [![License](https://poser.pugx.org/devgeniem/devgeniem/wp-queue/license)](https://packagist.org/packages/devgeniem/devgeniem/wp-queue)
+[![Build Status](https://travis-ci.org/devgeniem/wp-queue.svg?branch=master)](https://travis-ci.org/devgeniem/wp-queue) [![Latest Stable Version](https://poser.pugx.org/devgeniem/wp-queue/v/stable)](https://packagist.org/packages/devgeniem/wp-queue) [![Total Downloads](https://poser.pugx.org/devgeniem/wp-queue/downloads)](https://packagist.org/packages/devgeniem/wp-queue) [![Latest Unstable Version](https://poser.pugx.org/devgeniem/wp-queue/v/unstable)](https://packagist.org/packages/devgeniem/wp-queue) [![License](https://poser.pugx.org/devgeniem/wp-queue/license)](https://packagist.org/packages/devgeniem/wp-queue)
 
 WordPress Queue is a modular library for managing queued tasks in WordPress.
 
@@ -35,7 +37,7 @@ do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $contain
 }, 1, 1 );
 ```
 
-When creating a new queue, all its entries should be stored in the protected `$entries` property as an instance of a class implementing the `\Geniem\Queue\Interfaces\EntryInterface`. The actual entry data is untyped, but we encourage keeping the type consistent withing a specific queue. The actual entry handler can be created by implementing the `\Geniem\Queue\Interfaces\FetchableInterface` interface.
+When creating a new queue, all its entries should be stored in the protected `$entries` property as an instance of a class implementing the `\Geniem\Queue\Interfaces\EntryInterface`. The actual entry data is untyped, but we encourage keeping the type consistent withing a specific queue. The actual entry handler can be created by implementing the `\Geniem\Queue\Interfaces\EntryFetcherInterface` interface.
 
 The queue creation is handled with the `Geniem\Queue\QueueCreator` class. This ensures all dependecies are strictly typed and injected in place.
 
@@ -44,7 +46,7 @@ The queue creation is handled with the `Geniem\Queue\QueueCreator` class. This e
 To interact manually with your previously created queue, you can access it through the plugin's queue container. To access the plugin, you can use the global helper function `wpq()`. It returns the plugin singleton.
 
 ```php
-$my_queue = wpq()->get_queue_container()->get( 'my_queue' ); 
+$my_queue = wpq()->get_queue_container()->get( 'my_queue' );
 ```
 
 ### Entry handling
@@ -52,7 +54,7 @@ $my_queue = wpq()->get_queue_container()->get( 'my_queue' );
 A queue consists of a list of entries implementing the `\Geniem\Queue\Interfaces\EntryInterface` interface. WordPress Queue is agnostic about the handling of entries. It is left for you to implement. The dequeuer uses a try-catch block around calling the handle method. Thus, your handler should throw errors if the handling process fails. This enables logging errors and deciding whether to proceed with the dequeue or to rollback to the previous state in the queue. Here is an example of a simple handler that just logs the data in the queue.
 
 ```php
-class MyHandler implements \Geniem\Queue\Interfaces\HandleableInterface {
+class MyHandler implements \Geniem\Queue\Interfaces\EntryHandlerInterface {
 
     public function handle( \Geniem\Queue\Interfaces\EntryInterface $entry ) {
         error_log( 'Entry data: ' . $entry->get_data() );
@@ -66,9 +68,9 @@ After creating the handler, pass an instance to your queue:
 ```php
 do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
     $my_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
-    
+
     // Set the handler.
-    $my_queue->set_entry_handler( new Myhandler() ); 
+    $my_queue->set_entry_handler( new Myhandler() );
 
     $container->add( $my_queue );
 }, 1, 1 );
@@ -76,14 +78,14 @@ do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $contain
 
 ### Entry fetching and enqueueing
 
-WordPress Queue introduces a concept of a 'fetcher'. A fetcher is an instance with a functionality of fetching more entries for a queue. Fetchers should implement the `\Geniem\Queue\Interfaces\FetchableInterface` interface. One example of using a fetcher is to integrate your queue to an external API providing some data to be passed to the queue.
+WordPress Queue introduces a concept of a 'fetcher'. A fetcher is an instance with a functionality of fetching more entries for a queue. Fetchers should implement the `\Geniem\Queue\Interfaces\EntryFetcherInterface` interface. One example of using a fetcher is to integrate your queue to an external API providing some data to be passed to the queue.
 
 The `Geniem\Queue\Enqueuer` class calls the fetcher's fetch method and wraps the resulting array items into entry objects if not already wrapped. After this, each entry is run through the `enqueue` method of the given queue instance.
 
 Here is a simple fetcher example always returning the same array of entries.
 
 ```php
-class MyFetcher implements \Geniem\Queue\Interfaces\FetchableInterface {
+class MyFetcher implements \Geniem\Queue\Interfaces\EntryFetcherInterface {
 
     public function fetch() : ?array {
         $entry_data = [
@@ -104,9 +106,9 @@ And then, adding an fetcher instance for your queue:
 ```php
 do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
     $my_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
-    
+
     // Set the fetcher.
-    $my_queue->set_entry_fetcher( new MyFetcher() ); 
+    $my_queue->set_entry_fetcher( new MyFetcher() );
 
     $container->add( $my_queue );
 }, 1, 1 );
@@ -149,7 +151,7 @@ In the following examples we create a simple fetcher returning an array of entri
 #### Fetcher example
 
 ```php
-class MyFetcher implements \Geniem\Queue\Interfaces\FetchableInterface {
+class MyFetcher implements \Geniem\Queue\Interfaces\EntryFetcherInterface {
 
     public function fetch() : ?array {
         $entry_data = [
@@ -174,7 +176,7 @@ class MyFetcher implements \Geniem\Queue\Interfaces\FetchableInterface {
 #### Handler example
 
 ```php
-class MyHandler implements \Geniem\Queue\Interfaces\HandleableInterface {
+class MyHandler implements \Geniem\Queue\Interfaces\EntryHandlerInterface {
 
     public function handle( \Geniem\Queue\Interfaces\EntryInterface $entry ) {
         error_log( 'Entry data: ' . $entry->get_data() );
@@ -192,7 +194,7 @@ do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $contain
     $redis_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
     $redis_queue->set_entry_fetcher( new MyFetcher() );
     $redis_queue->set_entry_handler( new MyHandler() );
-    
+
     $container->add( $redis_queue );
 }, 1, 1 );
 ```
@@ -242,6 +244,3 @@ docker run --rm -it -v $(pwd):/opt phptest:7.4 "php ./vendor/bin/phpunit" ./test
 
 - [Ville Siltala](https://github.com/villesiltala)
 
-## License
-
-Code released under the [MIT License](./LICENSE).

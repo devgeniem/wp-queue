@@ -7,8 +7,8 @@ namespace Geniem\Queue\Mock;
 
 use Geniem\Queue\Instance\Base;
 use Geniem\Queue\Interfaces\EntryInterface;
-use Geniem\Queue\Interfaces\FetchableInterface;
-use Geniem\Queue\Interfaces\HandleableInterface;
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 use Geniem\Queue\Logger;
 
 /**
@@ -39,11 +39,11 @@ class MockQueue extends Base {
     /**
      * Queue constructor.
      *
-     * @param string              $name    A unique name for the queue.
-     * @param FetchableInterface  $fetcher The entry fetcher instance.
-     * @param HandleableInterface $handler The entry handler instance.
+     * @param string                $name    A unique name for the queue.
+     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
+     * @param EntryHandlerInterface $handler The entry handler instance.
      */
-    public function __construct( string $name, FetchableInterface $fetcher, HandleableInterface $handler ) {
+    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler ) {
         $this->name          = $name;
         $this->entry_fetcher = $fetcher;
         $this->entry_handler = $handler;

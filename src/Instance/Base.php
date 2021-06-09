@@ -8,8 +8,8 @@ namespace Geniem\Queue\Instance;
 
 use Psr\Log\LoggerInterface;
 use Geniem\Queue\Interfaces\EntryInterface;
-use Geniem\Queue\Interfaces\FetchableInterface;
-use Geniem\Queue\Interfaces\HandleableInterface;
+use Geniem\Queue\Interfaces\EntryFetcherInterface;
+use Geniem\Queue\Interfaces\EntryHandlerInterface;
 use Geniem\Queue\Interfaces\QueueInterface;
 
 /**
@@ -27,14 +27,14 @@ abstract class Base implements QueueInterface {
     /**
      * The entry fetcher instance.
      *
-     * @var FetchableInterface|null
+     * @var EntryFetcherInterface|null
      */
     protected $entry_fetcher;
 
     /**
      * The entry handler instance.
      *
-     * @var HandleableInterface|null
+     * @var EntryHandlerInterface|null
      */
     protected $entry_handler;
 
@@ -64,18 +64,18 @@ abstract class Base implements QueueInterface {
     /**
      * Get the entry handler.
      *
-     * @return HandleableInterface|null
+     * @return EntryHandlerInterface|null
      */
-    public function get_entry_handler() : ?HandleableInterface {
+    public function get_entry_handler() : ?EntryHandlerInterface {
         return $this->entry_handler;
     }
 
     /**
      * Get the entry fetcher.
      *
-     * @return FetchableInterface|null
+     * @return EntryFetcherInterface|null
      */
-    public function get_entry_fetcher() : ?FetchableInterface {
+    public function get_entry_fetcher() : ?EntryFetcherInterface {
         return $this->entry_fetcher;
     }
 
@@ -100,9 +100,11 @@ abstract class Base implements QueueInterface {
     /**
      * Set the entry handler.
      *
-     * @param HandleableInterface $entry_handler The callable to handle the single entry.
+     * @param EntryHandlerInterface|null $entry_handler The callable to handle the single entry.
+     *
+     * @return Base
      */
-    public function set_entry_handler( ?HandleableInterface $entry_handler ) {
+    public function set_entry_handler( ?EntryHandlerInterface $entry_handler ) {
         $this->entry_handler = $entry_handler;
 
         return $this;
@@ -111,9 +113,11 @@ abstract class Base implements QueueInterface {
     /**
      * Set the entry fetcher.
      *
-     * @param FetchableInterface $entry_fetcher The callable to handle the single entry.
+     * @param EntryFetcherInterface|null $entry_fetcher The callable to handle the single entry.
+     *
+     * @return Base
      */
-    public function set_entry_fetcher( ?FetchableInterface $entry_fetcher ) {
+    public function set_entry_fetcher( ?EntryFetcherInterface $entry_fetcher ) {
         $this->entry_fetcher = $entry_fetcher;
 
         return $this;
