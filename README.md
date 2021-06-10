@@ -15,6 +15,8 @@ composer config repositories.wp-queue git git@github.com:devgeniem/wp-queue.git
 composer require devgeniem/wp-queue
 ```
 
+The plugin initializes itself in the `plugins_loaded` hook. Your code should start using the plugin features after this hook is run by WordPress. An alternative is to customize the plugin initialization hook with the provided filter `wqp_init_hook`. See [plugin.php](./plugin.php) for details.
+
 ## Functionalities
 
 ### Queue structure
@@ -30,7 +32,7 @@ To create a queue, call the implementation constructor with your unique name for
 Here is an example of creating a Redis queue:
 
 ```php
-do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
+add_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
     $my_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
     // ...
     $container->add( $my_queue );
@@ -66,7 +68,7 @@ class MyHandler implements \Geniem\Queue\Interfaces\EntryHandlerInterface {
 After creating the handler, pass an instance to your queue:
 
 ```php
-do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
+add_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
     $my_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
 
     // Set the handler.
@@ -104,7 +106,7 @@ class MyFetcher implements \Geniem\Queue\Interfaces\EntryFetcherInterface {
 And then, adding an fetcher instance for your queue:
 
 ```php
-do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
+add_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
     $my_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
 
     // Set the fetcher.
@@ -190,7 +192,7 @@ class MyHandler implements \Geniem\Queue\Interfaces\EntryHandlerInterface {
 To allow WordPress Queue to find our example queue by its name "my_queue", we must define it by adding it to the queue container in the `wpq_add_queue` hook. Here we use the default RedisQueue as our queue instance. To add a new queue into the container call the `add` method. To replace an existing one with the same name, call the `replace` method.
 
 ```php
-do_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
+add_action( 'wpq_add_queue', function( \Psr\Container\ContainerInterface $container ) {
     $redis_queue = new Geniem\Queue\Instance\RedisQueue( 'my_queue' );
     $redis_queue->set_entry_fetcher( new MyFetcher() );
     $redis_queue->set_entry_handler( new MyHandler() );
