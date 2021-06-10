@@ -67,11 +67,11 @@ class RedisQueue extends Base {
     /**
      * Queue constructor.
      *
-     * @param string                $name    A unique name for the queue.
-     * @param EntryFetcherInterface $fetcher The entry fetcher instance.
-     * @param EntryHandlerInterface $handler The entry handler instance.
+     * @param string                     $name    A unique name for the queue.
+     * @param EntryFetcherInterface|null $fetcher The entry fetcher instance.
+     * @param EntryHandlerInterface|null $handler The entry handler instance.
      */
-    public function __construct( string $name, EntryFetcherInterface $fetcher, EntryHandlerInterface $handler ) {
+    public function __construct( string $name, ?EntryFetcherInterface $fetcher = null, ?EntryHandlerInterface $handler = null ) {
         $this->name          = $name;
         $this->entry_fetcher = $fetcher;
         $this->entry_handler = $handler;
