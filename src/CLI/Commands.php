@@ -63,7 +63,7 @@ class Commands {
      * ## OPTIONS
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     * : The unique queue name.
      *
      * ## EXAMPLES
      *
@@ -132,7 +132,7 @@ class Commands {
      * ## OPTIONS
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     * : The unique queue name.
      *
      * ## EXAMPLES
      *
@@ -158,7 +158,7 @@ class Commands {
          *
          * @var QueueInterface $queue
          */
-        $queue = apply_filters( "wpq_get_queue_$queue_name", null );
+        $queue = $this->queue_container->get( $queue_name );
 
         if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
@@ -184,7 +184,7 @@ class Commands {
      * ## OPTIONS
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     * : The unique queue name.
      *
      * ## EXAMPLES
      *
@@ -210,7 +210,7 @@ class Commands {
          *
          * @var QueueInterface $queue
          */
-        $queue = apply_filters( "wpq_get_queue_$queue_name", null );
+        $queue = $this->queue_container->get( $queue_name );
 
         if ( ! $queue instanceof QueueInterface ) {
             WP_CLI::error( "No queue found with the name \"$queue_name\"." );
@@ -240,7 +240,7 @@ class Commands {
      * ## OPTIONS
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     * : The unique queue name.
      *
      * ## EXAMPLES
      *
@@ -303,7 +303,7 @@ class Commands {
      * ## OPTIONS
      *
      * <name>
-     * : The queue name. The name is passed as the first argument for the 'wpq_get_queue_{name}' filter to be passed for the queue constructor.
+     * : The unique queue name.
      *
      * ## EXAMPLES
      *
