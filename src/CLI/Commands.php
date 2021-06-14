@@ -10,6 +10,7 @@ use Psr\Container\ContainerInterface;
 use WP_CLI;
 use Geniem\Queue\Dequeuer;
 use Geniem\Queue\Enqueuer;
+use Geniem\Queue\Interfaces\EntryInterface;
 use Geniem\Queue\Interfaces\QueueInterface;
 use Geniem\Queue\QueueCreator;
 use Psr\Log\LoggerInterface;
@@ -314,7 +315,7 @@ class Commands {
      * phpcs:enable
      *
      * @param array $args The command parameters.
-     * @return boolean
+     * @return boolean True for success, false on error.
      */
     public function dequeue( array $args = [] ) : bool {
         $queue_name = $args[0] ?? null;
@@ -359,6 +360,6 @@ class Commands {
             );
         }
 
-        return $success;
+        return $success instanceof EntryInterface;
     }
 }
