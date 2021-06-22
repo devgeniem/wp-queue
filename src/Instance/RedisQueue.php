@@ -319,9 +319,11 @@ class RedisQueue extends Base {
             }
 
             // Try to set a lock. If this returns true, the queue was successfully locked.
-            $lock_set = $this->redis->setnx( $lock_key, 1 ) === true;
+            // Depending on PHP version this function returns 1 or true.
+            $lock_set = $this->redis->setnx( $lock_key, 1 );
 
-            if ( ! $lock_set ) {
+            // Because of different return values with the setnx() we need to use boolval() here.
+            if ( boolval( $lock_set ) === false ) {
                 $this->logger->info(
                     'RedisCacheQueue - Stopping a dequeue process. The queue is locked.',
                     [ $this->name ]
