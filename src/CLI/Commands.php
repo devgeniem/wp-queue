@@ -70,7 +70,7 @@ class Commands {
      *
      *     # Create a queue with the name 'my_queue'.
      *     $ wp queue create my_queue
-     *     Success: Dequeue executed successfully!
+     *     Success: The queue <name> was created successfully!"
      *
      * phpcs:enable
      *
@@ -122,6 +122,82 @@ class Commands {
         catch ( Exception $err ) {
             WP_CLI::error( $err->getMessage() );
             return false;
+        }
+    }
+
+    /**
+     * Ensure a queue exists.
+     *
+     * phpcs:disable
+     *
+     * ## OPTIONS
+     *
+     * <name>
+     * : The unique queue name.
+     *
+     * ## EXAMPLES
+     *
+     *     # Ensure a queue exists with the name 'my_queue'.
+     *     $ wp queue ensure my_queue
+     *     Success: The queue <name> exists. No need to recreate it."
+     *
+     * phpcs:enable
+     *
+     * @param array $args The command parameters.
+     * @return boolean
+     */
+    public function ensure( array $args = [] ) : bool {
+        $queue_name = $args[0] ?? null;
+
+        if ( empty( $queue_name ) ) {
+            WP_CLI::error( 'Please define the queue name as the first command argument.' );
+            return false;
+        }
+
+        /**
+         * Fetch a queue by name.
+         *
+         * @var QueueInterface $queue
+         */
+        $queue = $this->queue_container->get( $queue_name );
+
+        if ( ! $queue instanceof QueueInterface ) {
+            WP_CLI::error( "No queue found with the name \"$queue_name\"." );
+            return false;
+        }
+
+        if ( $queue->exists() ) {
+            WP_CLI::success( "The queue \"$queue_name\" exists. No need to recreate it." );
+            return true;
+        }
+        else {
+
+            $entry_handler = $queue->get_entry_handler();
+
+            if ( empty( $entry_handler ) ) {
+                WP_CLI::error(
+                    'The queue must contain an entry handler before creating the queue.'
+                );
+                return false;
+            }
+
+            try {
+                $queue_creator = new QueueCreator( $queue );
+            }
+            catch ( Exception $err ) {
+                WP_CLI::error( $err->getMessage() );
+                return false;
+            }
+
+            try {
+                $queue_creator->create( true );
+                WP_CLI::success( "The queue \"$queue_name\" was created successfully!" );
+                return true;
+            }
+            catch ( Exception $err ) {
+                WP_CLI::error( $err->getMessage() );
+                return false;
+            }
         }
     }
 

@@ -163,8 +163,10 @@ class RedisQueue extends Base {
             // Delete old entries first.
             $this->clear();
 
-            // Push all serialized entries into the empty list.
-            $this->redis->lPush( $key, ...array_map( 'maybe_serialize', array_values( $entries ) ) );
+            if ( ! empty( $entries ) ) {
+                // Push all serialized entries into the empty list.
+                $this->redis->rPush( $key, ...array_map( 'maybe_serialize', array_values( $entries ) ) );
+            }
         }
         catch ( Exception $e ) {
             $this->logger->info(
@@ -210,6 +212,11 @@ class RedisQueue extends Base {
      */
     public function delete() {
         try {
+
+            // Run hooks before the queue is deleted.
+            do_action( 'wpq_before_delete', $this );
+            do_action( 'wpq_before_delete_' . $this->get_name(), $this );
+
             // Expire lock.
             $this->redis->pExpire( $this->get_lock_key(), 1 );
 
@@ -220,6 +227,10 @@ class RedisQueue extends Base {
             $this->clear();
 
             $this->exists = false;
+
+            // Run hooks after the queue is deleted.
+            do_action( 'wpq_after_delete', $this );
+            do_action( 'wpq_after_delete_' . $this->get_name(), $this );
         }
         catch ( Exception $e ) {
             $this->logger->error( 'RedisCacheQueue - Unable to delete queue. Error: ' . $e->getMessage() );
@@ -238,9 +249,18 @@ class RedisQueue extends Base {
 
         // Delete the entry list by trimming off elements in batches of 100.
         try {
+
+            // Run hooks before the queue is cleared.
+            do_action( 'wpq_before_clear', $this );
+            do_action( 'wpq_before_clear_' . $this->get_name(), $this );
+
             while ( $this->redis->llen( $key ) > 0 ) {
                 $this->redis->ltrim( $key, 0, -99 );
             }
+
+            // Run hooks after the queue is cleared.
+            do_action( 'wpq_after_clear', $this );
+            do_action( 'wpq_after_clear_' . $this->get_name(), $this );
         }
         catch ( Exception $e ) {
             $this->logger->error( 'RedisCacheQueue - Unable to clear the queue. Error: ' . $e->getMessage() );

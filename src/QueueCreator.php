@@ -38,14 +38,16 @@ class QueueCreator {
 
         if ( $fetcher instanceof EntryFetcherInterface ) {
             // Run hooks before the entries are fetched.
-            do_action( 'wpq_before_fetch', $this->queue );
-            do_action( 'wpq_before_fetch_' . $this->queue->get_name(), $this->queue );
+            do_action( 'wpq_before_create_fetch', $this->queue );
+            do_action( 'wpq_before_create_fetch_' . $this->queue->get_name(), $this->queue );
 
             $entries = $this->queue->get_entry_fetcher()->fetch();
 
             // Run hooks after the entries are fetched.
-            do_action( 'wpq_after_fetch', $this->queue, $entries );
-            do_action( 'wpq_after_fetch_' . $this->queue->get_name(), $this->queue, $entries );
+            do_action( 'wpq_after_create_fetch', $this->queue, $entries );
+            do_action( 'wpq_after_create_fetch_' . $this->queue->get_name(), $this->queue, $entries );
+            do_action( 'wpq_after_fetch', $queue, $entries );
+            do_action( 'wpq_after_fetch_' . $name, $queue, $entries );
 
             $this->queue->set_entries( $entries );
         }
