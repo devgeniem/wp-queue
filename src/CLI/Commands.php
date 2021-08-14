@@ -430,6 +430,10 @@ class Commands {
             WP_CLI::success( "Dequeue for the queue \"$queue_name\" was executed successfully!" );
         }
         else {
+            if ( $queue->is_empty() ) {
+                return true;
+            }
+
             WP_CLI::error(
                 'An error occurred while executing the dequeue!
                 See the dequeuer and/or queue log for detailed information.'
