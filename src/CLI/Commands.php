@@ -190,7 +190,7 @@ class Commands {
             }
 
             try {
-                $queue_creator->create( true );
+                $queue_creator->create();
                 WP_CLI::success( "The queue \"$queue_name\" was created successfully!" );
                 return true;
             }
