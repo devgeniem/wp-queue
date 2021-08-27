@@ -5,5 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [Released]
+
+## [1.0.0] - 2020-08-27
+
+### Changed
+- Lots of refactoring and structure changes.
+
+### Added
+- Tests.
+
 ### Added
 - feature/entry-exists: Method for checking if entry exists in queue added to RedisQueue.
