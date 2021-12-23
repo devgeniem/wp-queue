@@ -27,9 +27,6 @@ function wp_mocks() {
         ]
     );
 
-    $redis_class = Redis::class;
-
-
     // Replace the Redis instance with a mocked filter.
     $factory          = new RedisMockFactory();
     $redis_mock_class = $factory->getAdapterClass( 'Predis\Client' );
@@ -40,5 +37,7 @@ function wp_mocks() {
         ->reply( $redis_mock );
 }
 wp_mocks();
+
+add_filter( 'wqp_init_hook', function () { return null; } );
 
 require_once dirname( __DIR__ ) . '/plugin.php';

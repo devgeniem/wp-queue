@@ -244,5 +244,4 @@ docker run --rm -it -v $(pwd):/opt phptest:7.4 "php ./vendor/bin/phpunit" ./test
 
 ## Contributors
 
-- [Ville Siltala](https://github.com/villesiltala)
-
+- [Check the up-to-date list here](https://github.com/devgeniem/wp-queue/graphs/contributors)
