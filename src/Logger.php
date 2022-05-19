@@ -198,17 +198,16 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function log( $level, $message, array $context = [] ) {
-        $context = empty( $context ) ?
+    public function log( $level, $message, array $context = [] ) : void {
+        $string_context = empty( $context ) ?
             '' :
             ' - Context: ' . addslashes( str_replace( PHP_EOL, '', print_r( $context, true ) ) ); // phpcs:ignore
-        $context = preg_replace( '/(\s+)/', ' ', $context ); // Remove multiple consecutive spaces.
+        $string_context = preg_replace( '/(\s+)/', ' ', $string_context ); // Remove multiple consecutive spaces.
         if ( defined( 'WP_CLI' ) && WP_CLI ) {
-            \WP_CLI::log( "Queue Logger - $level - $message$context" );
+            \WP_CLI::log( "Queue Logger - $level - $message$string_context" );
         }
         else {
-            error_log( "Queue Logger - $level - $message$context" ); // phpcs:ignore
+            error_log( "Queue Logger - $level - $message$string_context" ); // phpcs:ignore
         }
     }
-
 }

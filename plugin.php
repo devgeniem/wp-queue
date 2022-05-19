@@ -15,7 +15,7 @@
 namespace Geniem\Queue;
 
 // Check if Composer has been initialized in this directory.
-// Otherwise we just use global composer autoloading.
+// Otherwise, we just use global composer autoloading.
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
     require_once __DIR__ . '/vendor/autoload.php';
 }

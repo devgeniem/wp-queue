@@ -7,7 +7,6 @@ namespace Geniem\Queue;
 
 use Geniem\Queue\CLI\Commands;
 use Geniem\Queue\Exception\QueueContainerException;
-use Geniem\Queue\Queue\RedisCache;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -21,7 +20,7 @@ final class QueuePlugin {
     /**
      * Holds the singleton.
      *
-     * @var QueuePlugin
+     * @var QueuePlugin|null
      */
     protected static $instance;
 
@@ -65,7 +64,7 @@ final class QueuePlugin {
      *
      * @return string
      */
-    public function get_version(): string {
+    public function get_version() : string {
         return $this->version;
     }
 
@@ -121,7 +120,7 @@ final class QueuePlugin {
     /**
      * Set the logger.
      *
-     * @param LoggerInterface $logger The logger.
+     * @param ?LoggerInterface $logger The logger.
      *
      * @return QueuePlugin Return self to enable chaining.
      */
@@ -136,13 +135,15 @@ final class QueuePlugin {
      *
      * @param string $version     The current plugin version.
      * @param string $plugin_path The plugin path.
+     *
+     * @throws \Geniem\Queue\Exception\QueueContainerException If QueueContainer doesn't implement ContainerInterface.
      */
-    public static function init( $version, $plugin_path ) {
-        if ( empty( static::$instance ) ) {
-            static::$instance = new self( $version, $plugin_path );
-            static::$instance->init_container();
-            static::$instance->hooks();
-            static::$instance->init_cli();
+    public static function init( string $version, string $plugin_path ) : void {
+        if ( empty( self::$instance ) ) {
+            self::$instance = new self( $version, $plugin_path );
+            self::$instance->init_container();
+            self::$instance->hooks();
+            self::$instance->init_cli();
         }
     }
 
@@ -152,6 +153,10 @@ final class QueuePlugin {
      * @return QueuePlugin
      */
     public static function plugin() : QueuePlugin {
+        if ( static::$instance === null ) {
+            static::init( '', dirname( __DIR__, 2 ) );
+        }
+
         return static::$instance;
     }
 
@@ -161,7 +166,7 @@ final class QueuePlugin {
      * @param string $version     The current plugin version.
      * @param string $plugin_path The plugin path.
      */
-    protected function __construct( $version, $plugin_path ) {
+    protected function __construct( string $version, string $plugin_path ) {
         $this->version     = $version;
         $this->plugin_path = $plugin_path;
         $this->plugin_uri  = plugin_dir_url( $plugin_path ) . basename( $this->plugin_path );
@@ -170,7 +175,7 @@ final class QueuePlugin {
     /**
      * Add plugin hooks and filters.
      */
-    protected function hooks() {
+    protected function hooks() : void {
         // Queue plugin ready.
         do_action( 'wpq_init', $this );
         // The hook for adding queue instances.
@@ -182,7 +187,7 @@ final class QueuePlugin {
      *
      * @return void
      */
-    protected function init_cli() {
+    protected function init_cli() : void {
         // Register the CLI commands if WP CLI is available.
         if ( defined( 'WP_CLI' ) && WP_CLI ) {
             \WP_CLI::add_command( 'queue', Commands::class, [ $this->queue_container ] );
@@ -194,33 +199,35 @@ final class QueuePlugin {
      *
      * @throws QueueContainerException
      */
-    protected function init_container() {
-        $queue_container = apply_filters( 'wpq_queue_container', new QueueContainer() );
+    protected function init_container() : void {
+        $container = apply_filters( 'wpq_queue_container', new QueueContainer() );
 
-        if ( ! $queue_container instanceof ContainerInterface ) {
+        if ( ! $container instanceof ContainerInterface ) {
             $interface = ContainerInterface::class;
             throw new QueueContainerException( "The queue container must implement the $interface interface." );
         }
 
-        $this->queue_container = $queue_container;
+        $this->queue_container = $container;
     }
 
     /**
      * Initializes the logger through a filter.
      */
-    protected function init_logger() {
+    protected function init_logger() : void {
         $this->logger = apply_filters( 'wpq_logger', new Logger() );
     }
 
     /**
      * Enqueue admin side scripts if they exist.
      */
-    public function enqueue_admin_scripts() {
+    public function enqueue_admin_scripts() : void {
         // Get file modification times to enable more dynamic versioning.
-        $css_mod_time = file_exists( $this->plugin_path . '/assets/dist/admin.css' ) ?
-            filemtime( $this->plugin_path . '/assets/dist/admin.css' ) : $this->version;
-        $js_mod_time  = file_exists( $this->plugin_path . '/assets/dist/admin.js' ) ?
-            filemtime( $this->plugin_path . '/assets/dist/admin.js' ) : $this->version;
+        $css_mod_time = file_exists( $this->plugin_path . '/assets/dist/admin.css' )
+            ? filemtime( $this->plugin_path . '/assets/dist/admin.css' )
+            : $this->version;
+        $js_mod_time  = file_exists( $this->plugin_path . '/assets/dist/admin.js' )
+            ? filemtime( $this->plugin_path . '/assets/dist/admin.js' )
+            : $this->version;
 
         if ( file_exists( $this->plugin_path . '/assets/dist/admin.css' ) ) {
             wp_enqueue_style(
@@ -242,5 +249,4 @@ final class QueuePlugin {
             );
         }
     }
-
 }

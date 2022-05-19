@@ -298,11 +298,11 @@ class RedisQueue extends Base {
     /**
      * Checks the number of entries in the queue.
      *
-     * @return bool
+     * @return int
      */
     public function size() : int {
         try {
-            return intval( $this->redis->llen( $this->get_entries_key() ) );
+            return (int) $this->redis->llen( $this->get_entries_key() );
         }
         catch ( Exception $e ) {
             $this->logger->error( 'RedisCacheQueue - Unable to read queue length. Error: ' . $e->getMessage() );
@@ -340,10 +340,10 @@ class RedisQueue extends Base {
 
             // Try to set a lock. If this returns true, the queue was successfully locked.
             // Depending on PHP version this function returns 1 or true.
-            $lock_set = $this->redis->setnx( $lock_key, 1 );
+            $lock_set = (bool) $this->redis->setnx( $lock_key, 1 );
 
             // Because of different return values with the setnx() we need to use boolval() here.
-            if ( boolval( $lock_set ) === false ) {
+            if ( $lock_set === false ) {
                 $this->logger->info(
                     'RedisCacheQueue - Stopping a dequeue process. The queue is locked.',
                     [ $this->name ]
@@ -351,10 +351,9 @@ class RedisQueue extends Base {
 
                 return null;
             }
-            else {
-                // Do not lock for eternity.
-                $this->redis->expire( $lock_key, $lock_ttl );
-            }
+
+            // Do not lock for eternity.
+            $this->redis->expire( $lock_key, $lock_ttl );
 
             $raw_entry = $this->redis->lIndex( $this->get_entries_key(), 0 );
             $entry     = maybe_unserialize( $raw_entry );
