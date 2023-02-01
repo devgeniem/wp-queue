@@ -6,14 +6,16 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 
 ## [Unreleased]
 
+## [Released]
+
+## [1.0.1] - 2023-02-01
+
 ### Changed
-- Fix declaration compatible with Psr\Container\ContainerInterface fatal errors after PHP 8.1 upgrade
+- Fix declaration compatible with Psr\Container\ContainerInterface fatal errors after PHP 8.1 upgrade.
 
 ### Changed
 
 - Enable PHP8, fixes tests, adds github workflows... #6
-
-## [Released]
 
 ## [1.0.0] - 2020-08-27
 
