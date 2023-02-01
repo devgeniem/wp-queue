@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 ## [Unreleased]
 
 ### Changed
+- Fix declaration compatible with Psr\Container\ContainerInterface fatal errors after PHP 8.1 upgrade
+
+### Changed
 
 - Enable PHP8, fixes tests, adds github workflows... #6
 
