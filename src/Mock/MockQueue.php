@@ -119,10 +119,10 @@ class MockQueue extends Base {
      *
      * @param array|EntryInterface[]|null $entries The entries/items.
      */
-    public function set_entries( $entries ) {
+    public function set_entries( ?array $entries ) {
         parent::set_entries( $entries );
 
-        $this->queue = $this->entries;
+        $this->queue = $this->entries ?? [];
     }
 
     /**

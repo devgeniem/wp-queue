@@ -127,10 +127,10 @@ abstract class Base implements QueueInterface {
      * Set the entries.
      * Passed items will be wrapped into entries.
      *
-     * @param EntryInterface[]|array $entries Array of entries or other items.
+     * @param EntryInterface[]|array|null $entries Array of entries or other items.
      */
     public function set_entries( ?array $entries ) {
-        $this->entries = wpq_wrap_items_to_entries( $entries );
+        $this->entries = $entries ? wpq_wrap_items_to_entries( $entries ) : [];
     }
 
     /**

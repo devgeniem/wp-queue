@@ -64,23 +64,23 @@ interface QueueInterface {
      * entries when this method is called. Afterwards,
      * the save function should save the final state of the queue.
      *
-     * @param EntryInterface[] $entries The queue entries.
+     * @param EntryInterface[]|null $entries The queue entries.
      */
-    public function set_entries( array $entries );
+    public function set_entries( ?array $entries );
 
     /**
      * Setter for the entry handler.
      *
-     * @param EntryHandlerInterface $handler The entry handler.
+     * @param EntryHandlerInterface|null $handler The entry handler.
      */
-    public function set_entry_handler( EntryHandlerInterface $handler );
+    public function set_entry_handler( ?EntryHandlerInterface $handler );
 
     /**
      * Setter for the entry fetcher.
      *
-     * @param EntryFetcherInterface $fetcher The entry handler.
+     * @param EntryFetcherInterface|null $fetcher The entry fetcher.
      */
-    public function set_entry_fetcher( EntryFetcherInterface $fetcher );
+    public function set_entry_fetcher( ?EntryFetcherInterface $fetcher );
 
     /**
      * Setter for the logger.
