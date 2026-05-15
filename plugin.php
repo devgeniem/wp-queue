@@ -3,7 +3,7 @@
  * Plugin Name:       WordPress Queue
  * Plugin URI:        https://github.com/devgeniem/wp-import-controller
  * Description:       WordPress Queue is a modular library for managing queued tasks in WordPress.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 5.4
  * Requires PHP:      8.0
  * Author:            Geniem
