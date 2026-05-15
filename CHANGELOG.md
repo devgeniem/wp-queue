@@ -6,13 +6,13 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 
 ## [Unreleased]
 
+## [Released]
+
 ## [1.0.2] - 2026-05-15
 
 ### Changed
 
 - Updated plugin to be compatible with PHP 8.3.
-
-## [Released]
 
 ## [1.0.1] - 2023-02-01
 
