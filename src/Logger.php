@@ -98,7 +98,7 @@ class Logger implements LoggerInterface {
     /**
      * Log a debug message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function debug( \Stringable|string $message, array $context = [] ) : void {
@@ -110,7 +110,7 @@ class Logger implements LoggerInterface {
     /**
      * Log an info message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function info( \Stringable|string $message, array $context = [] ) : void {
@@ -122,7 +122,7 @@ class Logger implements LoggerInterface {
     /**
      * Log a notice message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function notice( \Stringable|string $message, array $context = [] ) : void {
@@ -134,7 +134,7 @@ class Logger implements LoggerInterface {
     /**
      * Log a warning message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function warning( \Stringable|string $message, array $context = [] ) : void {
@@ -146,7 +146,7 @@ class Logger implements LoggerInterface {
     /**
      * Log an error message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function error( \Stringable|string $message, array $context = [] ) : void {
@@ -158,7 +158,7 @@ class Logger implements LoggerInterface {
     /**
      * Log a critical message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function critical( \Stringable|string $message, array $context = [] ) : void {
@@ -170,7 +170,7 @@ class Logger implements LoggerInterface {
     /**
      * Log an alert message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function alert( \Stringable|string $message, array $context = [] ) : void {
@@ -182,7 +182,7 @@ class Logger implements LoggerInterface {
     /**
      * Log an emergency message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function emergency( \Stringable|string $message, array $context = [] ) : void {
@@ -195,7 +195,7 @@ class Logger implements LoggerInterface {
      * The actual logging method.
      *
      * @param mixed  $level   The log level.
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
     public function log( mixed $level, \Stringable|string $message, array $context = [] ) : void {
