@@ -35,7 +35,7 @@
     "require-dev": {
         "roave/security-advisories": "dev-latest",
         "devgeniem/geniem-rules-codesniffer": "^1",
-        "brainmaestro/composer-git-hooks": "^v2.8.5",
+        "brainmaestro/composer-git-hooks": "^3.0",
         "phpunit/phpunit": "^9.6",
         "10up/wp_mock": "^0.4.2",
         "predis/predis": "^2.0",
