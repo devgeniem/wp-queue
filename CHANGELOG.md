@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 
 ## [Released]
 
+## [1.0.3] - 2026-05-27
+
+### Fixed
+
+- Fix compatibility issues
+
 ## [1.0.2] - 2026-05-15
 
 ### Changed
