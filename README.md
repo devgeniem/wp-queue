@@ -237,9 +237,9 @@ The plugin is tested locally with [PHPUnit](https://phpunit.de/) and automatical
 # Install local composer packages.
 composer install
 # Build and tag the container.
-docker build . -t phptest:7.4
+docker build . -t phptest:8.3
 # Run the container and watch changes.
-docker run --rm -it -v $(pwd):/opt phptest:7.4 "php ./vendor/bin/phpunit" ./tests/*.php
+docker run --rm -it -v $(pwd):/opt phptest:8.3 "php ./vendor/bin/phpunit" ./tests/*.php
 ```
 
 ## Contributors

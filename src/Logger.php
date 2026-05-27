@@ -98,10 +98,10 @@ class Logger implements LoggerInterface {
     /**
      * Log a debug message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function debug( $message, array $context = [] ) {
+    public function debug( \Stringable|string $message, array $context = [] ) : void {
         if ( static::DEBUG >= $this->log_level ) {
             $this->log( 'DEBUG', $message, $context );
         }
@@ -110,10 +110,10 @@ class Logger implements LoggerInterface {
     /**
      * Log an info message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function info( $message, array $context = [] ) {
+    public function info( \Stringable|string $message, array $context = [] ) : void {
         if ( static::INFO >= $this->log_level ) {
             $this->log( 'INFO', $message, $context );
         }
@@ -122,10 +122,10 @@ class Logger implements LoggerInterface {
     /**
      * Log a notice message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function notice( $message, array $context = [] ) {
+    public function notice( \Stringable|string $message, array $context = [] ) : void {
         if ( static::NOTICE >= $this->log_level ) {
             $this->log( 'NOTICE', $message, $context );
         }
@@ -134,10 +134,10 @@ class Logger implements LoggerInterface {
     /**
      * Log a warning message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function warning( $message, array $context = [] ) {
+    public function warning( \Stringable|string $message, array $context = [] ) : void {
         if ( static::WARNING >= $this->log_level ) {
             $this->log( 'WARNING', $message, $context );
         }
@@ -146,10 +146,10 @@ class Logger implements LoggerInterface {
     /**
      * Log an error message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function error( $message, array $context = [] ) {
+    public function error( \Stringable|string $message, array $context = [] ) : void {
         if ( static::ERROR >= $this->log_level ) {
             $this->log( 'ERROR', $message, $context );
         }
@@ -158,10 +158,10 @@ class Logger implements LoggerInterface {
     /**
      * Log a critical message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function critical( $message, array $context = [] ) {
+    public function critical( \Stringable|string $message, array $context = [] ) : void {
         if ( static::CRITICAL >= $this->log_level ) {
             $this->log( 'CRITICAL', $message, $context );
         }
@@ -170,10 +170,10 @@ class Logger implements LoggerInterface {
     /**
      * Log an alert message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function alert( $message, array $context = [] ) {
+    public function alert( \Stringable|string $message, array $context = [] ) : void {
         if ( static::ALERT >= $this->log_level ) {
             $this->log( 'ALERT', $message, $context );
         }
@@ -182,10 +182,10 @@ class Logger implements LoggerInterface {
     /**
      * Log an emergency message.
      *
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function emergency( $message, array $context = [] ) {
+    public function emergency( \Stringable|string $message, array $context = [] ) : void {
         if ( static::EMERGENCY >= $this->log_level ) {
             $this->log( 'EMERGENCY', $message, $context );
         }
@@ -195,10 +195,10 @@ class Logger implements LoggerInterface {
      * The actual logging method.
      *
      * @param mixed  $level   The log level.
-     * @param string $message The log message.
+     * @param \Stringable|string $message The log message.
      * @param array  $context The error context data.
      */
-    public function log( $level, $message, array $context = [] ) : void {
+    public function log( mixed $level, \Stringable|string $message, array $context = [] ) : void {
         $string_context = empty( $context ) ?
             '' :
             ' - Context: ' . addslashes( str_replace( PHP_EOL, '', print_r( $context, true ) ) ); // phpcs:ignore

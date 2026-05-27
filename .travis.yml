@@ -8,16 +8,14 @@ notifications:
 
 php:
   - nightly
-  - 8.0
-  - 7.4
+  - 8.3
 
 jobs:
   allow_failures:
     - php: nightly
 
 install:
-  - rm composer.lock
-  - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
+  - travis_retry composer install --no-interaction --prefer-dist --no-progress
 
 script:
   - composer test

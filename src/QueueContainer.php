@@ -44,7 +44,7 @@ class QueueContainer implements ContainerInterface {
      * @return QueueInterface         The found queue instance.
      * @throws QueueNotFoundException If no queue is found, an exception is thrown.
      */
-    public function get( $id ) {
+    public function get( string $id ) : QueueInterface {
         if ( ! isset( $this->queues[ $id ] ) ) {
             throw new QueueNotFoundException( "No queue found for key: $id" );
         }
@@ -59,7 +59,7 @@ class QueueContainer implements ContainerInterface {
      *
      * @return bool
      */
-    public function has( $id ) {
+    public function has( string $id ) : bool {
         return isset( $this->queues[ $id ] );
     }
 }
