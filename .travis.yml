@@ -15,8 +15,7 @@ jobs:
     - php: nightly
 
 install:
-  - rm composer.lock
-  - travis_retry composer update --no-interaction --prefer-dist --no-suggest --no-progress
+  - travis_retry composer install --no-interaction --prefer-dist --no-progress
 
 script:
   - composer test
