@@ -101,7 +101,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function debug( $message, array $context = [] ) {
+    public function debug( $message, array $context = [] ) : void {
         if ( static::DEBUG >= $this->log_level ) {
             $this->log( 'DEBUG', $message, $context );
         }
@@ -113,7 +113,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function info( $message, array $context = [] ) {
+    public function info( $message, array $context = [] ) : void {
         if ( static::INFO >= $this->log_level ) {
             $this->log( 'INFO', $message, $context );
         }
@@ -125,7 +125,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function notice( $message, array $context = [] ) {
+    public function notice( $message, array $context = [] ) : void {
         if ( static::NOTICE >= $this->log_level ) {
             $this->log( 'NOTICE', $message, $context );
         }
@@ -137,7 +137,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function warning( $message, array $context = [] ) {
+    public function warning( $message, array $context = [] ) : void {
         if ( static::WARNING >= $this->log_level ) {
             $this->log( 'WARNING', $message, $context );
         }
@@ -149,7 +149,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function error( $message, array $context = [] ) {
+    public function error( $message, array $context = [] ) : void {
         if ( static::ERROR >= $this->log_level ) {
             $this->log( 'ERROR', $message, $context );
         }
@@ -161,7 +161,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function critical( $message, array $context = [] ) {
+    public function critical( $message, array $context = [] ) : void {
         if ( static::CRITICAL >= $this->log_level ) {
             $this->log( 'CRITICAL', $message, $context );
         }
@@ -173,7 +173,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function alert( $message, array $context = [] ) {
+    public function alert( $message, array $context = [] ) : void {
         if ( static::ALERT >= $this->log_level ) {
             $this->log( 'ALERT', $message, $context );
         }
@@ -185,7 +185,7 @@ class Logger implements LoggerInterface {
      * @param string $message The log message.
      * @param array  $context The error context data.
      */
-    public function emergency( $message, array $context = [] ) {
+    public function emergency( $message, array $context = [] ) : void {
         if ( static::EMERGENCY >= $this->log_level ) {
             $this->log( 'EMERGENCY', $message, $context );
         }

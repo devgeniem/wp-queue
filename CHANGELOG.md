@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog][keepachangelog] and this project adher
 
 ## [Unreleased]
 
+- Add support for psr/log v2 & v3
+
 ## [Released]
 
 ## [1.0.1] - 2023-02-01
